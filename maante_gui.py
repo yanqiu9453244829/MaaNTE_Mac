@@ -589,6 +589,9 @@ class App(tk.Tk):
             w.destroy()
         self._tvars.clear()
 
+        IS_MACOS = sys.platform == "darwin"
+        WIN32_CTRL = {"Win32", "Win32-Front"}
+
         seen_groups = set()
         row = 0
         for task in self._iface.get("_all_tasks", []):
@@ -603,6 +606,11 @@ class App(tk.Tk):
 
             label = tr(task.get("label", name), self._loc) or name
 
+            # Controller compatibility: tasks with only Win32 entries can't run on macOS
+            ctrl_list = task.get("controller", [])
+            win32_only = bool(ctrl_list) and all(c in WIN32_CTRL for c in ctrl_list)
+            macos_disabled = IS_MACOS and win32_only
+
             if grp and grp not in seen_groups:
                 seen_groups.add(grp)
                 glabel = self._loc.get(f"group.{grp}.label", grp)
@@ -614,8 +622,13 @@ class App(tk.Tk):
 
             var = tk.BooleanVar(value=False)
             self._tvars[name] = var
-            ttk.Checkbutton(self._task_inner, text=label, variable=var
-                            ).grid(row=row, column=0, sticky="w", padx=16)
+
+            display_label = f"{label}  (僅 Windows)" if macos_disabled else label
+            cb = ttk.Checkbutton(self._task_inner, text=display_label, variable=var)
+            if macos_disabled:
+                cb.config(state="disabled")
+                var.set(False)
+            cb.grid(row=row, column=0, sticky="w", padx=16)
             row += 1
 
     def _build_log_panel(self, p):
