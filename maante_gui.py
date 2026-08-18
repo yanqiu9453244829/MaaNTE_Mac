@@ -321,8 +321,12 @@ class TaskRunner:
                     self._log("[ERROR] Tasker 初始化失敗")
                     self._set_status(STATUS_ERROR)
                     return
+                # Save recognition debug screenshots to debug/ so we can verify
+                # that the frame adapter is delivering the correct 1280x720 frames.
+                tasker.set_debug_mode(True)
+                tasker.set_save_draw(True)
                 self._tasker_ref = tasker
-                self._log("[INFO] Tasker 初始化成功 ✓")
+                self._log("[INFO] Tasker 初始化成功 ✓ (debug截圖已啟用→debug/)")
             except Exception as e:
                 self._log(f"[ERROR] Tasker 失敗: {e}")
                 self._log(traceback.format_exc())
