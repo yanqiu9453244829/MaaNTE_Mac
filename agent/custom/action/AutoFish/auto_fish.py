@@ -1,6 +1,7 @@
 import cv2
 import time
 import json
+import sys
 
 from pathlib import Path
 from ..Common.utils import get_image, match_template_in_region
@@ -63,10 +64,16 @@ class AutoFish(CustomAction):
             except:
                 pass
 
-        KEY_A = 65
-        KEY_D = 68
-        KEY_F = 70
-        KEY_ESC = 27
+        if sys.platform == "darwin":
+            KEY_A = 0    # macOS CGKeyCode for 'A'
+            KEY_D = 2    # macOS CGKeyCode for 'D'
+            KEY_F = 3    # macOS CGKeyCode for 'F'
+            KEY_ESC = 53 # macOS CGKeyCode for 'ESC'
+        else:
+            KEY_A = 65   # Windows VK_A
+            KEY_D = 68   # Windows VK_D
+            KEY_F = 70   # Windows VK_F
+            KEY_ESC = 27  # Windows VK_ESCAPE
 
         success_region = [520, 160, 265, 30]
         settlement_region = [566, 642, 150, 23]
@@ -107,7 +114,7 @@ class AutoFish(CustomAction):
                     return True
                 time.sleep(interval)
 
-            return False
+                return False
 
         def ensure_fish_game():
             for _ in range(10):
@@ -142,7 +149,15 @@ class AutoFish(CustomAction):
                 )
                 if m_prepare:
                     # logger.debug("On FishPrepare screen, pressing start...")
-                    controller.post_click(x + 15, y + 15)
+                    cx, cy = x + 15, y + 15
+                    try:
+                        controller.post_touch_move(cx, cy).wait()
+                        time.sleep(0.04)
+                        controller.post_touch_down(cx, cy).wait()
+                        time.sleep(0.08)
+                        controller.post_touch_up().wait()
+                    except Exception:
+                        controller.post_click(cx, cy)
                     time.sleep(1.5)
                     return True
 

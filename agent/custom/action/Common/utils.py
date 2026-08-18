@@ -28,15 +28,19 @@ def get_image(controller):
     return img
 
 
-def click_rect(controller, rect, delay=0.001):
+def click_rect(controller, rect, delay=0.05):
     x, y, w, h = rect
     cx = x + w // 2
     cy = y + h // 2
-    controller.post_touch_move(cx, cy).wait()  # 先移动鼠标位置到目标点，再执行点击
-    time.sleep(delay)
-    controller.post_touch_down(cx, cy).wait()
-    time.sleep(delay)
-    controller.post_touch_up().wait()
+    try:
+        controller.post_touch_move(cx, cy).wait()
+        time.sleep(0.04)
+        controller.post_touch_down(cx, cy).wait()
+        time.sleep(0.08)
+        controller.post_touch_up().wait()
+        time.sleep(0.02)
+    except Exception:
+        controller.post_click(cx, cy)
 
 
 def click_rect_multiple(controller, rect, repeat=3):
