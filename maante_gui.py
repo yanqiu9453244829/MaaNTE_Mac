@@ -78,23 +78,56 @@ def _load_json(path: Path):
 
 def load_interface() -> dict:
     data = _load_json(INTERFACE_FILE)
-    tasks = list(data.get("task", []))
+    tasks = []
+    task_map = {}
+    options_map = {}
+
+    def _process_item(obj):
+        if isinstance(obj, dict):
+            opts = obj.get("option", {})
+            if isinstance(opts, dict):
+                options_map.update(opts)
+            for t in obj.get("task", []):
+                if isinstance(t, dict) and "name" in t:
+                    tasks.append(t)
+                    task_map[t["name"]] = t
+        elif isinstance(obj, list):
+            for t in obj:
+                if isinstance(t, dict) and "name" in t:
+                    tasks.append(t)
+                    task_map[t["name"]] = t
+
+    _process_item(data)
     for rel in data.get("import", []):
         try:
             imp = _load_json(PROJECT_ROOT / rel)
-            if isinstance(imp, list):
-                # File is a bare list of task objects
-                tasks.extend(imp)
-            elif isinstance(imp, dict):
-                # File is {"task": [...], "option": {...}} format (standard PI format)
-                sub = imp.get("task", [])
-                if isinstance(sub, list):
-                    tasks.extend(sub)
-                elif sub:
-                    tasks.append(sub)
+            _process_item(imp)
         except Exception:
             pass
+
+    # Build entry and default pipeline_override mapping for each task
+    parsed_task_map = {}
+    for name, t in task_map.items():
+        entry = t.get("entry") or name
+        opt_keys = t.get("option", [])
+        overrides = {}
+        for opt_k in opt_keys:
+            opt_def = options_map.get(opt_k, {})
+            def_case = opt_def.get("default_case")
+            for c in opt_def.get("cases", []):
+                if c.get("name") == def_case:
+                    po = c.get("pipeline_override", {})
+                    if isinstance(po, dict):
+                        overrides.update(po)
+        parsed_task_map[name] = {
+            "entry": entry,
+            "pipeline_override": overrides,
+            "raw": t
+        }
+
     data["_all_tasks"] = tasks
+    data["_task_map"] = parsed_task_map
+    data["_options_map"] = options_map
     return data
 
 
@@ -198,14 +231,14 @@ class TaskRunner:
     def is_running(self) -> bool:
         return self._thread is not None and self._thread.is_alive()
 
-    def start(self, window_id: int, task_names: list) -> None:
+    def start(self, window_id: int, task_names: list, task_map: dict = None) -> None:
         if self.is_running():
             self._log("[WARN] 已有任務在運行，請先停止")
             return
         self._stop_evt.clear()
         self._tasker_ref = None
         self._thread = threading.Thread(
-            target=self._run, args=(window_id, task_names),
+            target=self._run, args=(window_id, task_names, task_map or {}),
             daemon=True, name="MaaNTE-Runner",
         )
         self._thread.start()
@@ -227,7 +260,7 @@ class TaskRunner:
         if self._status_cb:
             self._status_cb(s)
 
-    def _run(self, window_id: int, task_names: list) -> None:
+    def _run(self, window_id: int, task_names: list, task_map: dict) -> None:
         controller   = None
         tasker       = None
         resource     = None
@@ -365,14 +398,21 @@ class TaskRunner:
                 if self._stop_evt.is_set():
                     self._log("[INFO] 任務已被使用者停止")
                     break
-                self._log(f"\n[TASK] ▶ 執行：{task_name}")
+
+                t_info = task_map.get(task_name, {})
+                entry_name = t_info.get("entry") or task_name
+                overrides = t_info.get("pipeline_override") or {}
+
+                self._log(f"\n[TASK] ▶ 執行：{task_name} (入口節點: {entry_name})")
+                if overrides:
+                    self._log(f"[INFO] 套用覆蓋參數: {list(overrides.keys())}")
                 try:
-                    job = tasker.post_task(task_name)
+                    job = tasker.post_task(entry_name, overrides)
                     job.wait()
                     if job.succeeded:
                         self._log(f"[TASK] ✓ {task_name} 完成")
                     else:
-                        self._log(f"[TASK] ✗ {task_name} 失敗/未命中")
+                        self._log(f"[TASK] ✗ {task_name} 結束/未命中")
                 except Exception as e:
                     self._log(f"[ERROR] 任務 {task_name}: {e}")
                     self._log(traceback.format_exc())
@@ -696,7 +736,7 @@ class App(tk.Tk):
             messagebox.showwarning("未選擇任務", "請至少勾選一個任務")
             return
         self._lq.put(f"[INFO] 啟動任務：{', '.join(tasks)}")
-        self._runner.start(self._sel_win["id"], tasks)
+        self._runner.start(self._sel_win["id"], tasks, self._iface.get("_task_map", {}))
         self._save_config()
 
     def _on_stop(self):
