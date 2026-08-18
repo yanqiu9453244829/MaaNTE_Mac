@@ -83,9 +83,15 @@ def load_interface() -> dict:
         try:
             imp = _load_json(PROJECT_ROOT / rel)
             if isinstance(imp, list):
+                # File is a bare list of task objects
                 tasks.extend(imp)
             elif isinstance(imp, dict):
-                tasks.append(imp)
+                # File is {"task": [...], "option": {...}} format (standard PI format)
+                sub = imp.get("task", [])
+                if isinstance(sub, list):
+                    tasks.extend(sub)
+                elif sub:
+                    tasks.append(sub)
         except Exception:
             pass
     data["_all_tasks"] = tasks
@@ -567,7 +573,12 @@ class App(tk.Tk):
             name = task.get("name", "")
             if not name:
                 continue
-            grp   = task.get("group", "")
+
+            # group is a list e.g. ["Daily"] — take first element
+            grp_raw = task.get("group", [])
+            grp = grp_raw[0] if isinstance(grp_raw, list) and grp_raw else (
+                grp_raw if isinstance(grp_raw, str) else "")
+
             label = tr(task.get("label", name), self._loc) or name
 
             if grp and grp not in seen_groups:
