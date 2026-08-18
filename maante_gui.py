@@ -287,8 +287,8 @@ class TaskRunner:
             try:
                 from maa.resource import Resource
                 resource = Resource()
-                resource.post_path(RESOURCE_PATH).wait()
-                if not resource.inited:
+                resource.post_bundle(RESOURCE_PATH).wait()
+                if not resource.loaded:
                     self._log("[ERROR] Resource 載入失敗")
                     self._set_status(STATUS_ERROR)
                     return
