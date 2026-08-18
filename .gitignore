@@ -1,0 +1,30 @@
+# Byte-compiled / optimized / binary files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environments & Bundled binaries
+python/
+.venv/
+env/
+venv/
+ENV/
+
+# Runtime Logs & Caches
+debug/
+cache/
+log/
+logs/
+*.log
+
+# Windows binary release files (installed via pip / package manager on macOS)
+MaaNTE.exe
+maafw/
+
+# OS / Editor generated
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo

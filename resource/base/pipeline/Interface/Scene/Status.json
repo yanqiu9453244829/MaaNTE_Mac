@@ -1,0 +1,231 @@
+{
+    "InWorld": {
+        "desc": "在大世界界面",
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "EscMenuButton",
+                    "TasksMenuButton"
+                ]
+            }
+        },
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0
+    },
+    "InMiniWorld": {
+        "desc": "在特殊的小世界中(如粉爪、主线故事、异象委托等)",
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "ExitButton"
+                ]
+            }
+        },
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0
+    },
+    "InEscMenu": {
+        "desc": "在Esc菜单内",
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    918,
+                    101,
+                    312,
+                    165
+                ],
+                "expected": [
+                    "猎人等级",
+                    "獵人等級",
+                    "(?i)Hunter\\s*Level",
+                    "ハンターレベル",
+                    "헌터 레벨"
+                ],
+                "threshold": 0.8
+            }
+        },
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0
+    },
+    "InExplorationGuideMenu": {
+        "desc": "在探索指南菜单内",
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "roi": [
+                    0,
+                    0,
+                    80,
+                    80
+                ],
+                "template": "Common/Scene/SceneExplorationGuide.png"
+            }
+        }
+    },
+    "InBattlePassMenu": {
+        "desc": "在环期赏令菜单内（第一页）",
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "roi": [
+                    0,
+                    0,
+                    80,
+                    80
+                ],
+                "template": "Common/Scene/SceneBattlePass.png"
+            }
+        }
+    },
+    "InScarboroughFairMenu": {
+        "desc": "在斯卡布罗集市内",
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "roi": [
+                    0,
+                    0,
+                    80,
+                    80
+                ],
+                "template": "Common/Scene/SceneScarboroughFair.png"
+            }
+        }
+    },
+    "InEventsMenu": {
+        "desc": "在活动菜单内",
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    60,
+                    20,
+                    110,
+                    40
+                ],
+                "expected": [
+                    "活动",
+                    "活動",
+                    "(?i)Event",
+                    "イベント",
+                    "이벤트"
+                ],
+                "threshold": 0.8
+            }
+        }
+    },
+    "InBagMenu": {
+        "desc": "在背包菜单内",
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    60,
+                    20,
+                    110,
+                    40
+                ],
+                "expected": [
+                    "背包",
+                    "(?i)Inventory",
+                    "バッグ",
+                    "가방"
+                ],
+                "threshold": 0.8
+            }
+        }
+    },
+    "InCharactersMenu": {
+        "desc": "在角色菜单内",
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    60,
+                    20,
+                    110,
+                    40
+                ],
+                "expected": [
+                    "个人信息",
+                    "個人資訊",
+                    "(?i)Profile",
+                    "情報",
+                    "信息",
+                    "資訊",
+                    "(?i)Info",
+                    "メッセージ",
+                    "정보"
+                ],
+                "threshold": 0.8,
+                "roi_offset": [
+                    0,
+                    0,
+                    165,
+                    0
+                ]
+            }
+        }
+    },
+    "InCityTycoonMenu": {
+        "desc": "在都市大亨菜单内",
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "roi": [
+                    0,
+                    0,
+                    80,
+                    80
+                ],
+                "template": "Common/Scene/SceneCityTycoon.png"
+            }
+        }
+    },
+    "InHethereauHobbiesMenu": {
+        "desc": "在都市闲趣菜单内",
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    169,
+                    49,
+                    346,
+                    134
+                ],
+                "expected": [
+                    "都市闲趣",
+                    "都市閒趣",
+                    "(?i)Hethereau\\s*Hobbies",
+                    "シティライフ"
+                ],
+                "threshold": 0.8,
+                "roi_offset": [
+                    0,
+                    0,
+                    346,
+                    0
+                ]
+            }
+        }
+    },
+    "EmptyNode": {
+        "desc": "空节点，无任何操作和识别，仅用于流程跳转",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0
+    },
+    "StopNode": {
+        "desc": "流程结束节点，无任何操作和识别，仅用于流程结束",
+        "pre_delay": 0,
+        "action": "StopTask",
+        "post_delay": 0,
+        "rate_limit": 0
+    }
+}

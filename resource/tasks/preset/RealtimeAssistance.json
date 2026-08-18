@@ -1,0 +1,37 @@
+{
+    "preset": [
+        {
+            "name": "RealTimeAssistance",
+            "label": "$preset.RealtimeAssist.label",
+            "description": "$preset.RealtimeAssist.description",
+            "task": [
+                {
+                    "name": "OnlineMapNavigation",
+                    "option": {
+                        "OnlineMapNavigationSettings": {
+                            "port": "14514",
+                            "tolerance": "5",
+                            "frame_interval": "0.1"
+                        },
+                        "OnlineMapNavigationAngleBackend": "auto",
+                        "OnlineMapNavigationDebug": "No"
+                    },
+                    "enabled": true
+                },
+                {
+                    "name": "RealTime",
+                    "option": {
+                        "RealTimeCheckInterval": {
+                            "interval": 500
+                        },
+                        "RealTimeAutoSkipStory": "Yes",
+                        "RealTimeAutoSkipStoryDialog": "Yes",
+                        "RealTimeAutoTeleport": "Yes",
+                        "RealTimeAutoTeleportWitte": "Yes",
+                        "RealTimeAutoTeleportPhone": "Yes"
+                    }
+                }
+            ]
+        }
+    ]
+}

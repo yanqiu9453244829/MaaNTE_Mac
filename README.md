@@ -1,0 +1,165 @@
+<!-- markdownlint-disable MD028 MD029 MD033 MD041 -->
+<div align="center">
+  <img alt="LOGO" src="./assets/logo.png" width="256" height="256" />
+
+# MaaNTE
+
+  <p align="center">
+    MAA异环小助手
+    <br/>
+    <a href="https://docs.maante.org/"><strong>官方网站</strong></a>
+    ·
+    <a href="./docs/eng/README_en.md">English</a> | <a href="./docs/README_zh-tw.md">繁體中文</a> | <a href="./docs/jp/README_jp.md">日本語</a> | <a href="https://github.com/1bananachicken/MaaNTE/issues">报告 Bug</a>
+  </p>
+  <p align="center">
+    <img src="https://img.shields.io/badge/Platform-Windows-0078D7?style=flat-square&logo=Windows" alt="Platform" />
+    <img src="https://img.shields.io/badge/Language-Python%20%2F%20PipeLine-blue?style=flat-square&logo=Python" alt="Language" />
+    <img alt="license" src="https://img.shields.io/github/license/1bananachicken/MaaNTE?style=flat-square">
+    <br>
+    <a href="https://docs.maante.org/" target="_blank"><img alt="website" src="https://img.shields.io/badge/Website-docs.maante.org-00A98F?style=flat-square"></a>
+    <a href="https://maafw.com/" target="_blank"><img alt="website" src="https://raw.githubusercontent.com/MaaXYZ/MaaFramework/refs/heads/main/docs/static/maafw.svg"></a>
+    <a href="https://mirrorchyan.com/zh/projects?rid=MaaNTE" target="_blank"><img alt="mirrorc" src="https://raw.githubusercontent.com/MaaXYZ/MaaFramework/refs/heads/main/docs/static/mirrorc-zh.svg"></a>
+    <a href="https://space.bilibili.com/3546893080594665" target="_blank"><img alt="Bilibili" src="https://img.shields.io/badge/Bilibili-MaaNTE--Official-00A1D6?logo=bilibili"></a>
+    <a href="https://discord.gg/e6mPMRYQpR" target="_blank"><img alt="Discord" src="https://img.shields.io/badge/Discord-MaaNTE--Official-5865F2?logo=discord"></a>
+    <br/>
+    <img alt="commit" src="https://img.shields.io/github/commit-activity/m/1bananachicken/MaaNTE?&color=darkgreen">
+    <img src="https://img.shields.io/github/stars/1bananachicken/MaaNTE?style=flat-square&logo=github&color=darkgreen" alt="Stars" />
+  </p>
+
+由 [MaaFramework](https://github.com/MaaXYZ/MaaFramework) 强力驱动！
+
+</div>
+
+> [!Caution]
+>
+> 近期出现大量账号二次分发本软件，甚至冒充官方账号。通过非官方途径获取的软件可能**含有病毒**，并且一般不是最新版本。请务必从 [GitHub Releases](https://github.com/1bananachicken/MaaNTE/releases) 等官方渠道下载。
+
+> [!Tip]
+>
+> 本项目还处于早期开发阶段，欢迎提交 PR 和 Issue。
+>
+> 下载、文档与问题排查请访问 [官方网站](https://docs.maante.org/)
+>
+> 加入 QQ 交流群请前往 [官网 QQ 群页面](https://docs.maante.org/zh_cn/qq-group/)，会自动分配当前未满的群号
+>
+> 官方 B 站账号: [MaaNTE-Official](https://space.bilibili.com/3546893080594665)
+>
+> 官方Discord: [Discord](https://discord.gg/e6mPMRYQpR)
+
+## ⚠️免责声明与风险提示
+
+> [!Note]
+>
+> 本软件为第三方工具，通过识别游戏画面模拟常规交互动作，简化《异环》的游戏玩法。本项目遵循相关法律法规。本项目旨在简化用户的重复性操作，不会破坏游戏平衡或提供不公平优势，也绝不会修改任何游戏文件或数据。
+>
+> 本项目开源、免费，且仅供学习和交流使用，请勿用于任何商业或营利性目的。开发者团队拥有本项目的最终解释权。因使用本软件而产生的任何问题，均与本项目及开发者无关。
+
+> [!Caution]
+>
+> 根据[《异环》公平游戏宣言](https://yh.wanmei.com/news/gamebroad/20260202/260701.html)：
+>
+> 严禁使用任何第三方工具破坏游戏公平性。我们将严厉打击使用外挂、加速器、作弊软件、宏脚本等非法工具的行为，这些行为包括但不限于自动挂机、技能加速、无敌模式、瞬移、修改游戏数据等操作。一经查实，我们将视违规严重程度及违规次数，采取包括但不限于扣除违规收益、冻结游戏账号、永久封禁游戏账号等措施。
+>
+> **您应充分了解并自愿承担使用本工具可能带来的所有风险。**
+
+## 🧾开源许可
+
+本软件使用 [GNU Affero General Public License v3.0 only](https://spdx.org/licenses/AGPL-3.0-only.html) 开源。
+
+## ✨功能一览
+
+- 🎣 自动钓鱼
+  - 🐟 自动卖鱼
+  - 🪝 自动买鱼饵
+- 🥤 自动做咖啡
+  - 🔨 驱赶所有顾客
+- 💰 自动领取一咖舍收益
+  - 📦 自动补货
+  - 🏷️ 根据风向标自动替换商品
+- 🪑 自动收家具
+  - 🏠 支持维纳/伊登/天景/金都/峰林五处公寓
+- 💎 自动领取奖励
+  - 🎁 活跃度
+  - 📅 环期赏令
+- 🐾 粉爪大劫案
+  - 🔄 支持无限循环挂机
+  - 📊 收益统计与日志记录
+- 🧩 自动俄罗斯方块
+  - 🤖 内置 AI 自动决策
+  - 🔁 自动连打直到活力耗尽
+- 🕛 实时辅助
+  - 🗼 自动传送
+  - ⏩ 自动跳剧情
+  - 🎁 自动拾取
+- ⚔️ 自动闪避
+  - 🛡️ 基于音频识别的自动闪避/反击
+- 🎵 自动超强音
+  - 🥁 循环演奏迷星叫
+- 🎹 自动弹钢琴
+  - 📂 支持任意 MIDI 导入
+- 📋 预设任务组
+  - 💤 挂机任务 / 🗺️ 实时辅助
+
+## ❓常见问题
+
+### 📄问题排查手册
+
+先前往[问题排查手册](docs/zh_cn/问题排查.md)寻找解决方案。
+
+### 🤔找不到怎么启动？
+
+- 普通用户请下载 [Release 版本](https://github.com/1bananachicken/MaaNTE/releases)，有开发需求再 clone 仓库
+
+## 💡注意事项
+
+游戏需要运行在 1280×720 分辨率、窗口化模式下；钓鱼新算法支持 120 帧运行。
+
+## 💻开发指南
+
+想参与开发或深入了解项目？来这里吧 👉 [开发者文档索引](docs/zh_cn/develop/README.md)
+
+欢迎各路大佬贡献代码，一起让 MaaNTE 变得更强！💪
+
+## ❤️鸣谢
+
+### 开源项目
+
+- [MaaFramework](https://github.com/MaaXYZ/MaaFramework)
+  基于图像识别的自动化黑盒测试框架
+- [MXU](https://github.com/MistEO/MXU)
+  MaaFramework Next UI
+- [MaaAssistantArknights](https://github.com/MaaAssistantArknights/MaaAssistantArknights)
+  《明日方舟》小助手，全日常一键长草！
+- [MaaEnd](https://github.com/MaaEnd/MaaEnd)
+  基于视觉 AI 的「明日方舟：终末地」自动化工具
+- [OK-NTE](https://github.com/BnanZ0/ok-nte)
+  一款基于图像识别的《异环》自动化工具，支持后台运行。
+- [M9A](https://github.com/MAA1999/M9A)
+  重返未来：1999 小助手
+- ~~[MFAAvalonia](https://github.com/SweetSmellFox/MFAAvalonia)
+  基于 Avalonia UI 构建的 MaaFramework 通用 GUI 解决方案~~
+
+### 贡献/参与者
+
+感谢全部参与到测试与开发中的开发者(´▽`ʃ♡ƪ)
+
+[![Contributors](https://contributors-img.web.app/image?repo=1bananachicken/MaaNTE&max=1000)](https://github.com/1bananachicken/MaaNTE/graphs/contributors)
+
+## ☕请我们喝咖啡
+
+如果 MaaNTE 帮你省下了不少时间，不妨请开发者喝杯咖啡？
+
+你的支持就是我们持续更新的最大动力🥰
+
+[<img width="200" alt="赞助我们" src="https://pic1.afdiancdn.com/static/img/welcome/button-sponsorme.png">](https://afdian.com/a/MaaNTE)
+
+## ⭐Star History
+
+如果觉得软件对你有帮助，帮忙点个 Star 吧！~（网页最上方右上角的小星星），这就是对我们最大的支持了！
+<a href="https://www.star-history.com/?repos=1bananachicken%2FMaaNTE&type=date&legend=top-left">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=1bananachicken/MaaNTE&type=date&theme=dark&legend=top-left" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=1bananachicken/MaaNTE&type=date&legend=top-left" />
+   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=1bananachicken/MaaNTE&type=date&legend=top-left" />
+ </picture>
+</a>

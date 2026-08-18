@@ -1,0 +1,84 @@
+{
+    // 只能使用本文件中定义的接口，禁止引用 SceneManager 文件夹内的 __ScenePrivate 节点，调用方法参考 SceneExample.json
+    "SceneAnyEnterWorld": {
+        "desc": "从任意界面返回大世界界面",
+        "next": [
+            "[JumpBack]__SceneCheckOSD",
+            "__ScenePrivateMenuListEnterWorld",
+            "__ScenePrivateMiniWorldEnterWorld",
+            "__ScenePrivateAnyEnterWorldSuccess",
+            "[JumpBack]__ScenePrivateLogin",
+            "[JumpBack]SceneLoadingType1",
+            "[JumpBack]SceneLoadingType2",
+            //"[JumpBack]SceneClickCloseButton",
+            "[JumpBack]__ScenePrivateAnyExit"
+        ]
+    },
+    "SceneLoadingType1": {
+        "desc": "加载界面类型1, 右下角有一只塔吉多",
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "template": [
+                    "Common/Scene/SceneLoading.png"
+                ]
+            }
+        },
+        "next": [
+            "SceneLoadingType1",
+            "__ScenePrivateNextTrue"
+        ]
+    },
+    "SceneLoadingType2": {
+        "desc": "加载界面类型2, 左边风景右下加载进度",
+        "recognition": "OCR",
+        "roi": [
+            1158,
+            644,
+            101,
+            49
+        ],
+        "expected": [
+            // @i18n-skip 
+            "%"
+        ],
+        "pre_delay": 0,
+        "post_delay": 0,
+        "next": [
+            "SceneLoadingType2",
+            "__ScenePrivateNextTrue"
+        ]
+    },
+    "SceneClickBlankToExit": {
+        "desc": "点击空白区域关闭",
+        "recognition": "OCR",
+        "expected": [
+            "点击空白区域关闭",
+            "點擊空白區域關閉",
+            "(?i)Press\\s*empty\\s*area\\s*to\\s*close",
+            "空白を押して閉じる",
+            "关闭",
+            "關閉",
+            "(?i)Close",
+            "閉じる",
+            "빈 곳을 터치해 닫기"
+        ],
+        "roi": [
+            63,
+            460,
+            1156,
+            222
+        ],
+        "post_delay": 1000, // 只有页面不动了之后再退出该节点
+        "action": "ClickKey",
+        "key": 27
+    },
+    "SceneClickCloseButton": {
+        "desc": "点击关闭按钮",
+        "recognition": "And",
+        "all_of": [
+            "CloseButton"
+        ],
+        "action": "Click"
+    }
+}

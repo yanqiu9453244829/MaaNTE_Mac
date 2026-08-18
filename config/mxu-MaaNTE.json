@@ -1,0 +1,233 @@
+{
+  "version": "1.0",
+  "instances": [
+    {
+      "id": "j3qlmfw",
+      "name": "實時輔助",
+      "controllerName": "Win32-Front",
+      "resourceName": "官服",
+      "tasks": [
+        {
+          "id": "imr8yxf",
+          "taskName": "OnlineMapNavigation",
+          "enabled": true,
+          "optionValues": {
+            "OnlineMapNavigationSettings": {
+              "type": "input",
+              "values": {
+                "port": "14514",
+                "tolerance": "5",
+                "frame_interval": "0.1"
+              }
+            },
+            "OnlineMapNavigationPositionBackend": {
+              "type": "select",
+              "caseName": "auto"
+            },
+            "OnlineMapNavigationAngleBackend": {
+              "type": "select",
+              "caseName": "auto"
+            },
+            "OnlineMapNavigationDebug": {
+              "type": "switch",
+              "value": false
+            }
+          }
+        },
+        {
+          "id": "noz8p9i",
+          "taskName": "RealTime",
+          "enabled": true,
+          "optionValues": {
+            "RealTimeCheckInterval": {
+              "type": "input",
+              "values": {
+                "interval": 500
+              }
+            },
+            "RealTimeAutoLoot": {
+              "type": "switch",
+              "value": true
+            },
+            "RealTimeAutoSkipStory": {
+              "type": "switch",
+              "value": true
+            },
+            "RealTimeAutoSkipStoryDialog": {
+              "type": "switch",
+              "value": true
+            },
+            "RealTimeAutoSkipStorySummary": {
+              "type": "switch",
+              "value": true
+            },
+            "RealTimeAutoSkipImportantStory": {
+              "type": "switch",
+              "value": true
+            },
+            "RealTimeAutoTeleport": {
+              "type": "switch",
+              "value": true
+            },
+            "RealTimeAutoTeleportWitte": {
+              "type": "switch",
+              "value": true
+            },
+            "RealTimeAutoTeleportPhone": {
+              "type": "switch",
+              "value": true
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "kuamoi7",
+      "name": "實時輔助",
+      "controllerName": "Win32",
+      "resourceName": "官服",
+      "tasks": [
+        {
+          "id": "735chy2",
+          "taskName": "OnlineMapNavigation",
+          "enabled": true,
+          "optionValues": {
+            "OnlineMapNavigationSettings": {
+              "type": "input",
+              "values": {
+                "port": "14514",
+                "tolerance": "5",
+                "frame_interval": "0.1"
+              }
+            },
+            "OnlineMapNavigationPositionBackend": {
+              "type": "select",
+              "caseName": "auto"
+            },
+            "OnlineMapNavigationAngleBackend": {
+              "type": "select",
+              "caseName": "auto"
+            },
+            "OnlineMapNavigationDebug": {
+              "type": "switch",
+              "value": false
+            }
+          }
+        },
+        {
+          "id": "cpd2gm9",
+          "taskName": "RealTime",
+          "enabled": true,
+          "optionValues": {
+            "RealTimeCheckInterval": {
+              "type": "input",
+              "values": {
+                "interval": 500
+              }
+            },
+            "RealTimeAutoLoot": {
+              "type": "switch",
+              "value": true
+            },
+            "RealTimeAutoSkipStory": {
+              "type": "switch",
+              "value": true
+            },
+            "RealTimeAutoSkipStoryDialog": {
+              "type": "switch",
+              "value": true
+            },
+            "RealTimeAutoSkipStorySummary": {
+              "type": "switch",
+              "value": true
+            },
+            "RealTimeAutoSkipImportantStory": {
+              "type": "switch",
+              "value": true
+            },
+            "RealTimeAutoTeleport": {
+              "type": "switch",
+              "value": true
+            },
+            "RealTimeAutoTeleportWitte": {
+              "type": "switch",
+              "value": true
+            },
+            "RealTimeAutoTeleportPhone": {
+              "type": "switch",
+              "value": true
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "settings": {
+    "theme": "light",
+    "accentColor": "emerald",
+    "language": "zh-TW",
+    "backgroundOpacity": 50,
+    "confirmBeforeDelete": false,
+    "maxLogsPerInstance": 2000,
+    "autoClearLogsOnLaunch": true,
+    "windowSize": {
+      "width": 1000,
+      "height": 618
+    },
+    "showOptionPreview": true,
+    "sidePanelExpanded": true,
+    "rightPanelWidth": 320,
+    "rightPanelCollapsed": false,
+    "addTaskPanelHeight": 192,
+    "connectionPanelExpanded": true,
+    "screenshotPanelExpanded": true,
+    "screenshotFrameRate": "1",
+    "mirrorChyan": {
+      "cdk": "",
+      "channel": "stable",
+      "cdkEncrypted": ""
+    },
+    "welcomeShownHash": "-tknetk",
+    "devMode": false,
+    "tcpCompatMode": false,
+    "allowLanAccess": false,
+    "webServerPort": 12701,
+    "autoRunOnLaunch": false,
+    "minimizeToTray": false,
+    "onboardingCompleted": true,
+    "preActionConnectDelaySec": 5,
+    "hotkeys": {
+      "startTasks": "F10",
+      "stopTasks": "F11"
+    }
+  },
+  "customAccents": [],
+  "recentlyClosed": [],
+  "interfaceTaskSnapshot": [
+    "ClaimRewards",
+    "Furniture",
+    "WithdrawMoney",
+    "Fish",
+    "FishNew",
+    "BidKing",
+    "PinkPawHeist",
+    "MakeCoffee",
+    "MakeCoffeeLite",
+    "Rhythm",
+    "Tetris",
+    "BagelSpam",
+    "RealTime",
+    "OnlineMapNavigation",
+    "SoundDodge",
+    "AutoFScroll",
+    "FountainCheckin",
+    "AutoPiano",
+    "WitchDivination",
+    "AutonomousDrivingDatasetCollection",
+    "SyncCharacterAbilityCityAbilityNextCharacter",
+    "Touch"
+  ],
+  "newTaskNames": [],
+  "lastActiveInstanceId": "j3qlmfw",
+  "presetInitialized": true
+}

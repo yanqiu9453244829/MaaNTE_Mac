@@ -1,0 +1,281 @@
+{
+    "task": [
+        {
+            "name": "RealTime",
+            "label": "$task_realtime_label",
+            "entry": "RealTimeTaskMain",
+            "description": "$task_realtime_desc",
+            "option": [
+                "RealTimeCheckInterval",
+                "RealTimeAutoLoot",
+                "RealTimeAutoSkipStory",
+                "RealTimeAutoTeleport"
+            ],
+            "controller": [
+                "Win32-Front"
+            ],
+            "group": [
+                "RealTimeAssist"
+            ]
+        }
+    ],
+    "option": {
+        "RealTimeCheckInterval": {
+            "type": "input",
+            "label": "$task_realtime_option_check_interval",
+            "description": "$task_realtime_option_check_interval_desc",
+            "inputs": [
+                {
+                    "name": "interval",
+                    "default": "500",
+                    "pipeline_type": "int",
+                    "verify": "^\\d+$"
+                }
+            ],
+            "pipeline_override": {
+                "RealTimeSleep": {
+                    "post_delay": "{interval}"
+                }
+            }
+        },
+        "RealTimeAutoLoot": {
+            "type": "switch",
+            "label": "$task.RealTime.option.RealTimeAutoLoot.label",
+            "description": "$task.RealTime.option.RealTimeAutoLoot.desc",
+            "cases": [
+                {
+                    "name": "Yes",
+                    "label": "$option_switch_case_yes",
+                    "pipeline_override": {
+                        "RealTimeLoot": {
+                            "enabled": true
+                        }
+                    }
+                },
+                {
+                    "name": "No",
+                    "label": "$option_switch_case_no",
+                    "pipeline_override": {
+                        "RealTimeLoot": {
+                            "enabled": false
+                        }
+                    }
+                }
+            ],
+            "default_case": "Yes"
+        },
+        "RealTimeAutoSkipStory": {
+            "type": "switch",
+            "label": "$task_realtime_option_auto_skip_story",
+            "description": "$task_realtime_option_auto_skip_story_desc",
+            "cases": [
+                {
+                    "name": "Yes",
+                    "label": "$option_switch_case_yes",
+                    "option": [
+                        "RealTimeAutoSkipStoryDialog",
+                        "RealTimeAutoSkipStorySummary",
+                        "RealTimeAutoSkipImportantStory"
+                    ],
+                    "pipeline_override": {
+                        "RealTimeSkipStory": {
+                            "enabled": true
+                        },
+                        "RealTimeSkipStoryDialogConfirm": {
+                            "enabled": true
+                        }
+                    }
+                },
+                {
+                    "name": "No",
+                    "label": "$option_switch_case_no",
+                    "pipeline_override": {
+                        "RealTimeSkipStory": {
+                            "enabled": false
+                        },
+                        "RealTimeSkipStoryDialog": {
+                            "enabled": false
+                        },
+                        "RealTimeSkipStoryDialogConfirm": {
+                            "enabled": false
+                        },
+                        "RealTimeSkipStoryDialogCheckbox": {
+                            "enabled": false
+                        }
+                    }
+                }
+            ],
+            "default_case": "Yes"
+        },
+        "RealTimeAutoSkipStoryDialog": {
+            "type": "switch",
+            "label": "$task_realtime_option_skip_story_dialog",
+            "description": "$task_realtime_option_skip_story_dialog_desc",
+            "cases": [
+                {
+                    "name": "Yes",
+                    "label": "$option_switch_case_yes",
+                    "pipeline_override": {
+                        "RealTimeSkipStoryDialogCheckbox": {
+                            "enabled": true
+                        }
+                    }
+                },
+                {
+                    "name": "No",
+                    "label": "$option_switch_case_no",
+                    "pipeline_override": {
+                        "RealTimeSkipStoryDialogCheckbox": {
+                            "enabled": false
+                        }
+                    }
+                }
+            ],
+            "default_case": "Yes"
+        },
+        "RealTimeAutoSkipStorySummary": {
+            "type": "switch",
+            "label": "$task.RealTime.option.RealTimeAutoSkipStorySummary.label",
+            "description": "$task.RealTime.option.RealTimeAutoSkipStorySummary.desc",
+            "cases": [
+                {
+                    "name": "Yes",
+                    "label": "$option_switch_case_yes",
+                    "pipeline_override": {
+                        "RealTimeSkipStorySummary": {
+                            "enabled": true
+                        }
+                    }
+                },
+                {
+                    "name": "No",
+                    "label": "$option_switch_case_no",
+                    "pipeline_override": {
+                        "RealTimeSkipStorySummary": {
+                            "enabled": false
+                        }
+                    }
+                }
+            ],
+            "default_case": "Yes"
+        },
+        "RealTimeAutoSkipImportantStory": {
+            "type": "switch",
+            "label": "$task.RealTime.option.RealTimeAutoSkipImportantStory.label",
+            "description": "$task.RealTime.option.RealTimeAutoSkipImportantStory.desc",
+            "cases": [
+                {
+                    "name": "Yes",
+                    "label": "$option_switch_case_yes",
+                    "pipeline_override": {
+                        "RealTimeSkipImportantStory": {
+                            "enabled": true
+                        }
+                    }
+                },
+                {
+                    "name": "No",
+                    "label": "$option_switch_case_no",
+                    "pipeline_override": {
+                        "RealTimeSkipImportantStory": {
+                            "enabled": false
+                        }
+                    }
+                }
+            ],
+            "default_case": "Yes"
+        },
+        "RealTimeAutoTeleport": {
+            "type": "switch",
+            "label": "$task_realtime_option_auto_teleport",
+            "description": "$task_realtime_option_auto_teleport_desc",
+            "cases": [
+                {
+                    "name": "Yes",
+                    "label": "$option_switch_case_yes",
+                    "option": [
+                        "RealTimeAutoTeleportWitte",
+                        "RealTimeAutoTeleportPhone"
+                    ]
+                },
+                {
+                    "name": "No",
+                    "label": "$option_switch_case_no",
+                    "pipeline_override": {
+                        "RealTimeTeleportWitte": {
+                            "enabled": false
+                        },
+                        "RealTimeTeleportPhone": {
+                            "enabled": false
+                        }
+                    }
+                }
+            ],
+            "default_case": "No"
+        },
+        "RealTimeAutoTeleportWitte": {
+            "type": "switch",
+            "label": "$task_realtime_option_teleport_witte",
+            "description": "$task_realtime_option_teleport_witte_desc",
+            "cases": [
+                {
+                    "name": "Yes",
+                    "label": "$option_switch_case_yes",
+                    "pipeline_override": {
+                        "RealTimeTeleportWitte": {
+                            "enabled": true
+                        },
+                        "RealTimeConfirmTeleportWitte": {
+                            "enabled": true
+                        }
+                    }
+                },
+                {
+                    "name": "No",
+                    "label": "$option_switch_case_no",
+                    "pipeline_override": {
+                        "RealTimeTeleportWitte": {
+                            "enabled": false
+                        },
+                        "RealTimeConfirmTeleportWitte": {
+                            "enabled": false
+                        }
+                    }
+                }
+            ],
+            "default_case": "Yes"
+        },
+        "RealTimeAutoTeleportPhone": {
+            "type": "switch",
+            "label": "$task_realtime_option_teleport_phone",
+            "description": "$task_realtime_option_teleport_phone_desc",
+            "cases": [
+                {
+                    "name": "Yes",
+                    "label": "$option_switch_case_yes",
+                    "pipeline_override": {
+                        "RealTimeTeleportPhone": {
+                            "enabled": true
+                        },
+                        "RealTimeConfirmTeleportPhone": {
+                            "enabled": true
+                        }
+                    }
+                },
+                {
+                    "name": "No",
+                    "label": "$option_switch_case_no",
+                    "pipeline_override": {
+                        "RealTimeTeleportPhone": {
+                            "enabled": false
+                        },
+                        "RealTimeConfirmTeleportPhone": {
+                            "enabled": false
+                        }
+                    }
+                }
+            ],
+            "default_case": "Yes"
+        }
+    }
+}

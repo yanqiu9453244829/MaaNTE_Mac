@@ -1,0 +1,61 @@
+{
+    "__ScenePrivateNextTrue": {
+        "desc": "识别结果永远为真，用于退出next循环"
+    },
+    "__ScenePrivateAnyExit": {
+        "desc": "退出当前场景，返回上一个场景",
+        "pre_delay": 0,
+        "action": {
+            "type": "ClickKey",
+            "param": {
+                "key": 27 // ESC
+            }
+        },
+        "post_wait_freezes": {
+            "target": [
+                0,
+                0,
+                100,
+                100
+            ],
+            "time": 600,
+            "threshold": 0.85
+        },
+        "post_delay": 0
+    },
+    "__SceneCheckOSD": {
+        "desc": "检查窗口是否有遮挡",
+        "max_hit": 1,
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "__SceneCheckOSDFailed",
+            "EmptyNode"
+        ]
+    },
+    "__SceneCheckOSDFailed": {
+        "recognition": "OCR",
+        "roi": [
+            0,
+            0,
+            1280,
+            40
+        ],
+        "expected": [
+            "(?i)\\b(?:fps|frame\\s*rate)\\b",
+            "帧率|影格率|フレーム(?:レート)?|프레임(?:률)?",
+            "(?i)\\b(?:cpu|gpu)\\b",
+            "内存|記憶體|メモリ|메모리",
+            "(?i)\\b(?:usage|utilization)\\b|利用率|使用率",
+            "(?i)\\b(?:temperature|temp)\\b|温度C|温度|溫度|℃|°C|华氏|華氏|摂氏|섭씨|℉",
+            "(?i)\\bload\\b|负载|負載"
+        ],
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "focus": {
+            "Node.Recognition.Succeeded": "$scene_check_osd_failed_focus"
+        }
+    }
+}

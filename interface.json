@@ -1,0 +1,148 @@
+{
+    "interface_version": 2,
+    "name": "MaaNTE",
+    "description": "$description",
+    "contact": "$contact",
+    "license": "[GNU Affero General Public License v3.0 (AGPL-3.0)](https://github.com/MaaEnd/MaaEnd/blob/v2/LICENSE)",
+    "welcome": "$welcome.file",
+    "github": "https://github.com/1bananachicken/MaaNTE",
+    "icon": "logo.ico",
+    "version": "1.3.1",
+    "mirrorchyan_rid": "MaaNTE",
+    "mirrorchyan_multiplatform": true,
+    "languages": {
+        "zh_cn": "resource/locales/interface/zh_cn.json",
+        "zh_tw": "resource/locales/interface/zh_tw.json",
+        "en_us": "resource/locales/interface/en_us.json",
+        "ja_jp": "resource/locales/interface/ja_jp.json",
+        "ko_kr": "resource/locales/interface/ko_kr.json"
+    },
+    "controller": [
+        {
+            "name": "Win32",
+            "label": "$controller_default_label",
+            "type": "Win32",
+            "permission_required": true,
+            "win32": {
+                "class_regex": "UnrealWindow",
+                "window_regex": "^\\s*(异环|NTE)\\s*$",
+                "screencap": "Background",
+                "mouse": "SendMessageWithCursorPos",
+                "keyboard": "PostMessage"
+            }
+        },
+        {
+            "name": "Win32-Front",
+            "label": "$controller_front_label",
+            "type": "Win32",
+            "win32": {
+                "class_regex": "UnrealWindow",
+                "window_regex": "^\\s*(异环|NTE)\\s*$",
+                "screencap": "PrintWindow",
+                "mouse": "Seize",
+                "keyboard": "Seize"
+            }
+        },
+        {
+            "name": "Win32-Background",
+            "label": "$controller_background_label",
+            "type": "Win32",
+            "permission_required": true,
+            "win32": {
+                "class_regex": "UnrealWindow",
+                "window_regex": "^\\s*(异环|NTE)\\s*$",
+                "screencap": "PrintWindow",
+                "mouse": "SendMessageWithWindowPos",
+                "keyboard": "PostMessage"
+            }
+        },
+        {
+            "name": "CloudGame-Front",
+            "type": "Win32",
+            "permission_required": true,
+            "win32": {
+                "class_regex": "Qt.*",
+                "window_regex": "^\\s*(云.*?异环)\\s*$",
+                "screencap": "FramePool",
+                "mouse": "Seize",
+                "keyboard": "Seize"
+            }
+        }
+    ],
+    "resource": [
+        {
+            "name": "官服",
+            "label": "$resource_official_label",
+            "path": [
+                "resource/base"
+            ]
+        }
+    ],
+    "agent": {
+        "child_exec": "./python/python.exe",
+        "child_args": [
+            "-u",
+            "./agent/main.py"
+        ]
+    },
+    "group": [
+        {
+            "name": "Daily",
+            "label": "$group.Daily.label",
+            "default_expand": true
+        },
+        {
+            "name": "CityTycoon",
+            "label": "$group.CityTycoon.label",
+            "default_expand": true
+        },
+        {
+            "name": "HethereauHobbies",
+            "label": "$group.HethereauHobbies.label",
+            "default_expand": true
+        },
+        {
+            "name": "RealTimeAssist",
+            "label": "$group.RealTimeAssist.label",
+            "default_expand": true
+        },
+        {
+            "name": "DatasetCollection",
+            "label": "$group.DatasetCollection.label",
+            "default_expand": true
+        },
+        {
+            "name": "UserInfo",
+            "label": "$group.UserInfo.label",
+            "default_expand": true
+        }
+    ],
+    "task": [],
+    "import": [
+        "resource/tasks/ClaimRewards.json",
+        "resource/tasks/Furniture.json",
+        "resource/tasks/WithdrawMoney.json",
+        "resource/tasks/Fish.json",
+        "resource/tasks/BidKing.json",
+        "resource/tasks/PinkPawHeist.json",
+        "resource/tasks/MakeCoffee.json",
+        "resource/tasks/MakeCoffeeLite.json",
+        "resource/tasks/Rhythm.json",
+        "resource/tasks/Tetris.json",
+        "resource/tasks/BagelSpam.json",
+        "resource/tasks/RealTime.json",
+        "resource/tasks/OnlineMapNavigation.json",
+        "resource/tasks/SoundDodge.json",
+        "resource/tasks/AutoFScroll.json",
+        "resource/tasks/FountainCheckin.json",
+        "resource/tasks/AutoPiano.json",
+        "resource/tasks/WitchDivination.json",
+        "resource/tasks/AutonomousDrivingDataset.json",
+        "resource/tasks/SyncCharacterAbilityCityAbility.json",
+        "resource/tasks/Touch.json",
+        "resource/tasks/preset/AFK.json",
+        "resource/tasks/preset/RealtimeAssistance.json"
+    ],
+    "option": {},
+    "title": "MaaNTE v1.3.1 | 异环小助手"
+}

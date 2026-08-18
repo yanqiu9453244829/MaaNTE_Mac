@@ -1,0 +1,410 @@
+{
+    "task": [
+        {
+            "name": "Fish",
+            "label": "$task_fish_label",
+            "entry": "FishEntrance",
+            "option": [
+                "FishLoopInfinite",
+                "FishNumber",
+                "FishSellAuto",
+                "FishBuyBaitAuto"
+            ],
+            "group": [
+                "HethereauHobbies"
+            ]
+        },
+        {
+            "name": "FishNew",
+            "label": "$task_fish_new_label",
+            "entry": "FishNewEntrance",
+            "description": "$task_fish_new_desc",
+            "option": [
+                "FishNewAutoNavi",
+                "FishSellAuto",
+                "FishBuyBaitAuto"
+            ],
+            "group": [
+                "HethereauHobbies"
+            ]
+        }
+    ],
+    "option": {
+        "FishLoopTime": {
+            "type": "input",
+            "label": "$task_fish_option_loop_time",
+            "description": "$task_fish_option_loop_time_desc",
+            "inputs": [
+                {
+                    "name": "max_hit",
+                    "label": "$task_fish_option_loop_time",
+                    "default": "5",
+                    "pipeline_type": "int",
+                    "verify": "^\\d+$"
+                }
+            ],
+            "pipeline_override": {
+                "FishStart": {
+                    "max_hit": "{max_hit}"
+                }
+            }
+        },
+        "FishNumber": {
+            "type": "input",
+            "label": "$task_fish_option_count",
+            "description": "$task_fish_option_count_desc",
+            "inputs": [
+                {
+                    "name": "count",
+                    "label": "$task_fish_option_count_input",
+                    "default": "99",
+                    "pipeline_type": "int",
+                    "verify": "^\\d+$"
+                }
+            ],
+            "pipeline_override": {
+                "FishGameStart": {
+                    "custom_action_param": {
+                        "count": "{count}"
+                    }
+                }
+            }
+        },
+        "FishLoopInfinite": {
+            "type": "switch",
+            "label": "$task_fish_option_infinite",
+            "description": "$task_fish_option_infinite_desc",
+            "default_case": "No",
+            "cases": [
+                {
+                    "name": "Yes",
+                    "label": "$option_switch_case_yes",
+                    "pipeline_override": {
+                        "FishEntrance": {
+                            "next": [
+                                "FishLoopStart"
+                            ]
+                        },
+                        "FishGameStart": {
+                            "next": [
+                                "AutoSellFish",
+                                "AutoBuyFishBait",
+                                "FishLoopStart"
+                            ]
+                        },
+                        "AutoSellFish": {
+                            "next": [
+                                "AutoBuyFishBait",
+                                "FishLoopStart"
+                            ]
+                        },
+                        "AutoBuyFishBait": {
+                            "next": [
+                                "FishLoopStart"
+                            ]
+                        },
+                        "FishBaitHandled": {
+                            "next": [
+                                "FishLoopStart"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "No",
+                    "label": "$option_switch_case_no",
+                    "option": [
+                        "FishLoopTime"
+                    ]
+                }
+            ]
+        },
+        "FishSellAuto": {
+            "type": "switch",
+            "label": "$task_fish_option_auto_sell",
+            "description": "$task_fish_option_auto_sell_desc",
+            "cases": [
+                {
+                    "name": "Yes",
+                    "label": "$option_switch_case_yes",
+                    "pipeline_override": {
+                        "AutoSellFish": {
+                            "enabled": true
+                        },
+                        "FishNewOpenFishMaster": {
+                            "enabled": true
+                        },
+                        "FishNewSellFishExit": {
+                            "enabled": false
+                        }
+                    }
+                },
+                {
+                    "name": "No",
+                    "label": "$option_switch_case_no",
+                    "pipeline_override": {
+                        "AutoSellFish": {
+                            "enabled": false
+                        },
+                        "FishNewOpenFishMaster": {
+                            "enabled": false
+                        },
+                        "FishNewSellFishExit": {
+                            "enabled": true
+                        }
+                    }
+                }
+            ]
+        },
+        "FishBuyBaitAuto": {
+            "type": "switch",
+            "label": "$task_fish_option_auto_buy_bait",
+            "description": "$task_fish_option_auto_buy_bait_desc",
+            "cases": [
+                {
+                    "name": "Yes",
+                    "label": "$option_switch_case_yes",
+                    "pipeline_override": {
+                        "AutoBuyFishBait": {
+                            "enabled": true
+                        },
+                        "FishGotoBuyBait": {
+                            "enabled": true
+                        },
+                        "FishNewGotoBuyBait": {
+                            "enabled": true
+                        },
+                        "FishNewBaitExit": {
+                            "enabled": false
+                        }
+                    },
+                    "option": [
+                        "FishBaitThreshold"
+                    ]
+                },
+                {
+                    "name": "No",
+                    "label": "$option_switch_case_no",
+                    "pipeline_override": {
+                        "AutoBuyFishBait": {
+                            "enabled": false
+                        },
+                        "FishGotoBuyBait": {
+                            "enabled": false
+                        },
+                        "FishNewGotoBuyBait": {
+                            "enabled": false
+                        },
+                        "FishNewBaitExit": {
+                            "enabled": true
+                        }
+                    }
+                }
+            ]
+        },
+        "FishBaitThreshold": {
+            "type": "select",
+            "label": "$task_fish_option_bait_threshold",
+            "description": "$task_fish_option_bait_threshold_desc",
+            "cases": [
+                {
+                    "name": "0.8",
+                    "pipeline_override": {
+                        "AutoBuyFishBait": {
+                            "custom_action_param": {
+                                "found_bait_threshold": 0.8
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "0.7",
+                    "pipeline_override": {
+                        "AutoBuyFishBait": {
+                            "custom_action_param": {
+                                "found_bait_threshold": 0.7
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "0.6",
+                    "pipeline_override": {
+                        "AutoBuyFishBait": {
+                            "custom_action_param": {
+                                "found_bait_threshold": 0.6
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "0.5",
+                    "pipeline_override": {
+                        "AutoBuyFishBait": {
+                            "custom_action_param": {
+                                "found_bait_threshold": 0.5
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "0.4",
+                    "pipeline_override": {
+                        "AutoBuyFishBait": {
+                            "custom_action_param": {
+                                "found_bait_threshold": 0.4
+                            }
+                        }
+                    }
+                }
+            ]
+        },
+        "FishNewAutoNavi": {
+            "type": "switch",
+            "label": "$task_fish_new_option_auto_navi",
+            "description": "$task_fish_new_option_auto_navi_desc",
+            "default_case": "No",
+            "cases": [
+                {
+                    "name": "Yes",
+                    "label": "$option_switch_case_yes",
+                    "pipeline_override": {
+                        "FishNaviEntrance": {
+                            "enabled": true
+                        }
+                    },
+                    "option": [
+                        "FishNewTodayRecommend"
+                    ]
+                },
+                {
+                    "name": "No",
+                    "label": "$option_switch_case_no",
+                    "pipeline_override": {
+                        "FishNaviEntrance": {
+                            "enabled": false
+                        }
+                    }
+                }
+            ]
+        },
+        "FishNewTodayRecommend": {
+            "type": "switch",
+            "label": "$task_fish_new_option_today_recommend",
+            "description": "$task_fish_new_option_today_recommend_desc",
+            "default_case": "Yes",
+            "cases": [
+                {
+                    "name": "Yes",
+                    "label": "$option_switch_case_yes",
+                    "pipeline_override": {
+                        "FishNaviAutoChooseRecommendLocation": {
+                            "enabled": true
+                        }
+                    }
+                },
+                {
+                    "name": "No",
+                    "label": "$option_switch_case_no",
+                    "pipeline_override": {
+                        "FishNaviAutoChooseRecommendLocation": {
+                            "enabled": false
+                        }
+                    },
+                    "option": [
+                        "FishNewNaviLocations"
+                    ]
+                }
+            ]
+        },
+        "FishNewNaviLocations": {
+            "type": "select",
+            "label": "$task_fish_new_option_navi_locations",
+            "description": "$task_fish_new_option_navi_locations_desc",
+            "default_case": "Luoyuting",
+            "cases": [
+                {
+                    "name": "Lixiangguan",
+                    "label": "$task_fish_new_option_navi_locations_case_lixiangguan",
+                    "pipeline_override": {
+                        "LixiangguanRouteEntrance": {
+                            "enabled": true
+                        }
+                    }
+                },
+                {
+                    "name": "Shuilinghu",
+                    "label": "$task_fish_new_option_navi_locations_case_shuilinghu",
+                    "pipeline_override": {
+                        "ShuilinghuRouteEntrance": {
+                            "enabled": true
+                        }
+                    }
+                },
+                {
+                    "name": "Yingwuluodong",
+                    "label": "$task_fish_new_option_navi_locations_case_yingwuluodong",
+                    "pipeline_override": {
+                        "YingwuluodongRouteEntrance": {
+                            "enabled": true
+                        }
+                    }
+                },
+                {
+                    "name": "Luoyuting",
+                    "label": "$task_fish_new_option_navi_locations_case_luoyuting",
+                    "pipeline_override": {
+                        "LuoyutingRouteEntrance": {
+                            "enabled": true
+                        }
+                    }
+                },
+                {
+                    "name": "Yingwuluoxi",
+                    "label": "$task_fish_new_option_navi_locations_case_yingwuluoxi",
+                    "pipeline_override": {
+                        "YingwuluoxiRouteEntrance": {
+                            "enabled": true
+                        }
+                    }
+                },
+                {
+                    "name": "Xingzhuyouting",
+                    "label": "$task_fish_new_option_navi_locations_case_xingzhuyouting",
+                    "pipeline_override": {
+                        "XingzhuyoutingRouteEntrance": {
+                            "enabled": true
+                        }
+                    }
+                },
+                {
+                    "name": "Haijiaoguangchang",
+                    "label": "$task_fish_new_option_navi_locations_case_haijiaoguangchang",
+                    "pipeline_override": {
+                        "HaijiaoguangchangRouteEntrance": {
+                            "enabled": true
+                        }
+                    }
+                },
+                {
+                    "name": "Zhanwangjiao",
+                    "label": "$task_fish_new_option_navi_locations_case_zhanwangjiao",
+                    "pipeline_override": {
+                        "ZhanwangjiaoRouteEntrance": {
+                            "enabled": true
+                        }
+                    }
+                },
+                {
+                    "name": "Xiangyangdao",
+                    "label": "$task_fish_new_option_navi_locations_case_xiangyangdao",
+                    "pipeline_override": {
+                        "XiangyangdaoRouteEntrance": {
+                            "enabled": true
+                        }
+                    }
+                }
+            ]
+        }
+    }
+}

@@ -1,0 +1,16 @@
+maafw==v5.10.4
+loguru
+pillow
+pytz
+requests
+opencv-python
+onnxruntime-directml
+librosa
+numpy
+scipy
+scikit-learn
+soundcard
+mido
+scapy
+pktmon-interface
+websockets>=14.0,<17.0

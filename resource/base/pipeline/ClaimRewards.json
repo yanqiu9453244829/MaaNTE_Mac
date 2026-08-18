@@ -1,0 +1,184 @@
+{
+    "ClaimRewardsEntrance": {
+        "desc": "领取日常奖励入口",
+        "next": [
+            "ClaimRewardsActivity",
+            "ClaimRewardsBattlePass"
+        ]
+    },
+    "ClaimRewardsActivity": {
+        "desc": "领取活跃度奖励主流程",
+        "next": [
+            "ClaimRewardsActivitySwitchToPage2",
+            "[JumpBack]SceneAnyEnterExplorationGuideMenu"
+        ]
+    },
+    "ClaimRewardsActivitySwitchToPage2": {
+        "desc": "切换到探索指南第二页",
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "roi": [
+                    44,
+                    94,
+                    55,
+                    532
+                ],
+                "template": [
+                    "Common/Scene/ExplorationGuide/Page2.png",
+                    "Common/Scene/ExplorationGuide/Page2White.png",
+                    "Common/Scene/ExplorationGuide/Page2WithRedDot.png",
+                    "Common/Scene/ExplorationGuide/Page2WhiteWithRedDot.png"
+                ],
+                "threshold": 0.8
+            }
+        },
+        "action": "Click",
+        "post_delay": 500,
+        "next": [
+            "[JumpBack]ClaimRewardsActivityPoints",
+            "[JumpBack]ClaimRewardsActivityRewards",
+            "ClaimRewardsBattlePass"
+        ]
+    },
+    "ClaimRewardsActivityPoints": {
+        "desc": "领取活跃度点数",
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    174,
+                    203,
+                    988,
+                    404
+                ],
+                "expected": [
+                    "领取",
+                    "領取",
+                    "(?i)Claim",
+                    "受け取る",
+                    "수령"
+                ],
+                "threshold": 0.8
+            }
+        },
+        "action": "Click",
+        "post_wait_freezes": 500
+    },
+    "ClaimRewardsActivityRewards": {
+        "desc": "领取活跃度奖励（活跃度奖励部分结束）",
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "roi": [
+                    170,
+                    125,
+                    1006,
+                    79
+                ],
+                "template": [
+                    "ClaimRewards/ClaimActivityRewards.png"
+                ],
+                "threshold": 0.8
+            }
+        },
+        "action": "Click"
+    },
+    "ClaimRewardsBattlePass": {
+        "desc": "领取环期赏令主流程",
+        "next": [
+            "ClaimRewardsBattlePassSwitchToPage2",
+            "[JumpBack]SceneAnyEnterBattlePassMenu"
+        ]
+    },
+    "ClaimRewardsBattlePassSwitchToPage2": {
+        "desc": "切换到环期赏令第二页",
+        "recognition": "TemplateMatch",
+        "template": [
+            "Common/Scene/BattlePass/Page2.png",
+            "Common/Scene/BattlePass/Page2WithRedDot.png"
+        ],
+        "action": "Click",
+        "post_wait_freezes": 500,
+        "next": [
+            "[JumpBack]ClaimRewardsBattlePassExp",
+            "ClaimRewardsBattlePassBackToPage1"
+        ]
+    },
+    "ClaimRewardsBattlePassExp": {
+        "desc": "领取环期赏令经验",
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    1007,
+                    567,
+                    219,
+                    52
+                ],
+                "expected": [
+                    "全部领取",
+                    "全部領取",
+                    "(?i)Claim\\s*All",
+                    "一括受取",
+                    "모두 수령"
+                ],
+                "threshold": 0.8
+            }
+        },
+        "action": "Click"
+    },
+    "ClaimRewardsBattlePassBackToPage1": {
+        "desc": "切换到环期赏令第一页",
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "roi": [
+                    43,
+                    130,
+                    59,
+                    243
+                ],
+                "template": [
+                    "Common/Scene/BattlePass/Page1.png"
+                ],
+                "threshold": 0.6
+            }
+        },
+        "action": "Click",
+        "post_wait_freezes": 500,
+        "next": [
+            "[JumpBack]ClaimRewardsBattlePassRewards",
+            "ClaimRewardsExit"
+        ]
+    },
+    "ClaimRewardsBattlePassRewards": {
+        "desc": "领取历练奖赏",
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    782,
+                    568,
+                    217,
+                    49
+                ],
+                "expected": [
+                    "全部领取",
+                    "全部領取",
+                    "(?i)Claim\\s*All",
+                    "一括受取",
+                    "모두 수령"
+                ],
+                "threshold": 0.8
+            }
+        },
+        "action": "Click"
+    },
+    "ClaimRewardsExit": {
+        "desc": "领取奖励任务出口",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0
+    }
+}

@@ -1,0 +1,118 @@
+{
+    "RealTimeTeleportWitte": {
+        "desc": "传送至维特海默塔",
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "维特海默塔",
+                    "維特海默塔",
+                    "(?i)Wertheimer\\s*Tower",
+                    "ヴェルテハイモー塔",
+                    "베르트하이머 탑"
+                ],
+                "roi": [
+                    923,
+                    39,
+                    352,
+                    109
+                ]
+            }
+        },
+        "action": "DoNothing",
+        "post_delay": 0,
+        "next": [
+            "RealTimeConfirmTeleportWitte",
+            "RealTimeFakeTrue"
+        ]
+    },
+    "RealTimeConfirmTeleportWitte": {
+        "desc": "确认传送至维特海默塔",
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "传送",
+                    "傳送",
+                    "(?i)Teleport",
+                    "転送",
+                    "텔레포트"
+                ],
+                "roi": [
+                    930,
+                    610,
+                    345,
+                    60
+                ]
+            }
+        },
+        "action": {
+            "type": "LongPress",
+            "param": {
+                "duration": 100
+            }
+        },
+        "post_delay": 0,
+        "next": [
+            "RealTimeFakeTrue"
+        ]
+    },
+    "RealTimeTeleportPhone": {
+        "desc": "传送至电话亭",
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "传送点",
+                    "傳送點",
+                    "(?i)Teleport\\s*Point",
+                    "転送ポイント",
+                    "텔레포트 포인트"
+                ],
+                "roi": [
+                    923,
+                    39,
+                    352,
+                    109
+                ]
+            }
+        },
+        "action": "DoNothing",
+        "post_delay": 0,
+        "next": [
+            "RealTimeConfirmTeleportPhone",
+            "RealTimeFakeTrue"
+        ]
+    },
+    "RealTimeConfirmTeleportPhone": {
+        "desc": "确认传送至电话亭",
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "传送",
+                    "傳送",
+                    "(?i)Teleport",
+                    "転送",
+                    "텔레포트"
+                ],
+                "roi": [
+                    930,
+                    610,
+                    345,
+                    60
+                ]
+            }
+        },
+        "action": {
+            "type": "LongPress",
+            "param": {
+                "duration": 100
+            }
+        },
+        "post_delay": 0,
+        "next": [
+            "RealTimeFakeTrue"
+        ]
+    }
+}

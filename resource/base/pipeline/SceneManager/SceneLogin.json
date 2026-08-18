@@ -1,0 +1,166 @@
+{
+    "__ScenePrivateLogin": {
+        "desc": "处理登录界面",
+        "recognition": {
+            "type": "Or",
+            "param": {
+                "any_of": [
+                    "__ScenePrivateCloseLoginAnnouncement",
+                    "__ScenePriviteLoginExitButton"
+                ]
+            }
+        },
+        "next": [
+            "__ScenePrivateLoginContinue",
+            "[JumpBack]__ScenePrivateCloseLoginAnnouncement",
+            "__ScenePrivateLogin"
+        ]
+    },
+    "__ScenePriviteLoginExitButton": {
+        "desc": "登录界面退出按钮",
+        "recognition": "TemplateMatch",
+        "roi": [
+            0,
+            -100,
+            100,
+            100
+        ],
+        "template": [
+            "Common/Scene/Login/LoginExit.png"
+        ],
+        "green_mask": true,
+        "pre_delay": 0,
+        "post_delay": 0
+    },
+    "__ScenePrivateLoginContinue": {
+        "desc": "等待登录页面出现按钮继续",
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    400,
+                    550,
+                    480,
+                    140
+                ],
+                "expected": [
+                    "进入游戏",
+                    "進入遊戲",
+                    "(?i)Start",
+                    "ゲーム開始",
+                    "游戏",
+                    "遊戲",
+                    "GAME",
+                    "Game",
+                    "ゲーム",
+                    "게임"
+                ]
+            ,
+                "roi_offset": [
+                    0,
+                    0,
+                    120,
+                    0
+                ]
+            }
+        },
+        "action": {
+            "type": "Click"
+        },
+        "next": [
+            "__ScenePrivateAnyEnterWorldSuccess",
+            "[JumpBack]__ScenePrivateLoginMonthlyPassConfirm",
+            "[JumpBack]SceneLoadingType2",
+            "[JumpBack]__ScenePrivateAnyExit"
+        ]
+    },
+    "__ScenePrivateCloseLoginAnnouncement": {
+        "desc": "关闭登录时公告界面",
+        "recognition": "And",
+        "all_of": [
+            "__ScenePrivateCloseAnnouncementButton",
+            {
+                "recognition": {
+                    "type": "OCR",
+                    "param": {
+                        "roi": [
+                            429,
+                            88,
+                            413,
+                            69
+                        ],
+                        "expected": [
+                            "游戏公告",
+                            "公告",
+                            "NOTICE",
+                            "Notice",
+                            "お知らせ",
+                            "공지"
+                        ]
+                    },
+                    "desc": "识别是否在公告界面"
+                }
+            }
+        ],
+        "action": {
+            "type": "Click"
+        }
+    },
+    "__ScenePrivateCloseAnnouncementButton": {
+        "recognition": "TemplateMatch",
+        "roi": [
+            1090,
+            84,
+            70,
+            70
+        ],
+        "template": [
+            "Common/Scene/Login/LoginAnnouncementClose.png"
+        ],
+        "green_mask": true,
+        "pre_delay": 0,
+        "post_delay": 0
+    },
+    "__ScenePrivateLoginMonthlyPassConfirm": {
+        "desc": "领取月卡，无法跳过必须领取",
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    400,
+                    50,
+                    480,
+                    634
+                ],
+                "expected": [
+                    "异晶开采凭证",
+                    "異晶開採憑證",
+                    "(?i)Riftcrystal\\s*Mining\\s*Permit",
+                    "異晶採掘免許証",
+                    "剩余",
+                    "剩餘",
+                    "(?i)Remaining",
+                    "残り",
+                    "收集奖励",
+                    "收集獎勵",
+                    "(?i)Claim",
+                    "報酬",
+                    "이상 수정 채굴증",
+                    "剩余天数",
+                    "剩餘天數",
+                    "残り日数",
+                    "남은 일수",
+                    "今日奖励",
+                    "今日獎勵",
+                    "本日の報酬",
+                    "오늘 보상 수령"
+                ]
+            }
+        },
+        "action": "ClickKey",
+        "pre_delay": 1000,
+        "key": [
+            27
+        ]
+    }
+}
