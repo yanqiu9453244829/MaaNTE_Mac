@@ -68,16 +68,26 @@ class MacOSWindowManager(BaseWindowManager):
         **kwargs: Any,
     ) -> Optional[WindowInfo]:
         """
-        Find game window by regex title match across Toolkit desktop windows.
+        Find game window across Toolkit desktop windows by bundle/class or title.
+        Matches:
+        1. Exact/prefix bundle class_name: 'com.pwrd.yh.ios', 'com.pwrd.yh'
+        2. Window title regex: '异环', 'NTE'
+        3. Window title substring: '异环', 'NTE'
         """
         windows = self.enumerate_windows()
         regex = re.compile(pattern, re.IGNORECASE)
 
+        # 1. Primary: match known game bundle identifier / class_name
+        for w in windows:
+            if w.class_name and ("com.pwrd.yh" in w.class_name or "yh.ios" in w.class_name):
+                return w
+
+        # 2. Title regex match
         for w in windows:
             if w.title and regex.search(w.title):
                 return w
 
-        # Fallback: check substring match for 异环 or NTE
+        # 3. Title substring fallback
         for w in windows:
             if "异环" in w.title or "NTE" in w.title:
                 return w

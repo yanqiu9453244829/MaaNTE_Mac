@@ -448,20 +448,26 @@ def _check_admin_privilege():
 
 def _check_game_resolution():
     """连接控制器后检测游戏窗口分辨率"""
-    if not sys.platform.startswith("win"):
-        logger.debug("非 Windows 环境，跳过 Win32 分辨率检测")
+    try:
+        from agent.platform import get_window_manager
+    except ImportError:
+        try:
+            from platform import get_window_manager
+        except ImportError:
+            get_window_manager = None
+
+    if get_window_manager is None:
         return
 
-    from utils.win32_process import find_window_by_process, get_client_size
-
-    hwnd = find_window_by_process("HTGame.exe")
-    if hwnd is None:
-        logger.warning("分辨率检测: 未找到游戏窗口 (HTGame.exe)")
+    wm = get_window_manager()
+    game_win = wm.find_game_window()
+    if game_win is None:
+        logger.warning("分辨率检测: 未找到游戏窗口")
         return
 
-    size = get_client_size(hwnd)
-    if size is None:
-        logger.warning("分辨率检测: 无法获取窗口尺寸")
+    size = wm.get_window_size(game_win.id)
+    if size is None or size == (0, 0):
+        logger.info(f"已定位游戏窗口: '{game_win.title}' (ID: {game_win.id})")
         return
 
     w, h = size
@@ -475,7 +481,7 @@ def _check_game_resolution():
     else:
         logger.warning(
             f"当前窗口分辨率: {w}x{h}，scale=({scale_x:.3f}, {scale_y:.3f})。"
-            "请将游戏设置为 1280x720 窗口化模式，否则部分功能可能异常。"
+            "建议将游戏设置为 1280x720 模式，否则部分功能可能异常。"
         )
 
 
