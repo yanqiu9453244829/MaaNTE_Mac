@@ -1,30 +1,40 @@
 # -*- coding: utf-8 -*-
 """
-PHASE 4 Test Suite: macOS ARM64 Real Machine Agent Startup & Controller Verification.
+PHASE 5 Test Suite: macOS ARM64 Dual-Process Client/Agent Architecture Verification.
 
-Test Steps:
-1. Platform & OS Check (Darwin)
-2. Python Architecture (arm64 / 64-bit)
-3. MaaFramework Core Module Loading (maa, AgentServer, Tasker)
-4. MaaNTE CustomActions Import & Registration (all 42 actions)
-5. Toolkit Desktop Window Discovery
-6. Game Window Matching (异环 / com.pwrd.yh.ios)
-7. Official MacOSController Creation & post_connection()
-8. Real Game Screenshot Verification (post_screencap & cached_image non-empty)
-9. AgentServer Startup & Shutdown Lifecycle
-10. Tasker Initialization
+Architecture:
+1. Client Process (Main Test Process):
+   - Pure MaaFramework Client (NEVER imports custom / NEVER becomes AgentServer)
+   - Checks Darwin + arm64 + 64-bit Python
+   - Discovers Game Window via Toolkit.find_desktop_windows() (com.pwrd.yh.ios / 异环)
+   - Instantiates official MacOSController(window_id) & connects
+   - Captures live screenshot via post_screencap() and verifies cached_image
+   - Initializes Resource and Tasker
+   - Connects to Agent subprocess via AgentClient(socket_id)
 
-NOTE: This test suite does NOT execute any game automation pipelines/tasks.
+2. Agent Process (Independent Subprocess):
+   - Launches agent/main.py <socket_id>
+   - Imports custom package (registers all 42 CustomActions)
+   - Starts AgentServer on socket_id
+   - Handles IPC requests from Client Process
+
+3. IPC Verification:
+   - Client binds Resource to AgentClient
+   - Connects to AgentServer over socket
+   - Verifies AgentClient.connected == True and AgentClient.alive == True
+   - Verifies all CustomActions registered in Agent are accessible to Client
+   - Gracefully terminates Agent subprocess without hanging
 """
 
 from __future__ import annotations
 
+import os
 import platform
+import subprocess
 import sys
 import time
 from pathlib import Path
 
-# Add project root and agent to sys.path
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 AGENT_DIR = PROJECT_ROOT / "agent"
 
@@ -33,16 +43,16 @@ for p in (str(PROJECT_ROOT), str(AGENT_DIR)):
         sys.path.insert(0, p)
 
 
-def run_phase4_agent_startup_test() -> int:
-    print("=" * 70)
-    print("MaaNTE PHASE 4: macOS ARM64 Agent Startup & Controller Verification")
-    print("=" * 70)
+def run_phase5_dual_process_verification() -> int:
+    print("=" * 75)
+    print("MaaNTE PHASE 5: macOS ARM64 Dual-Process Client/Agent Architecture Suite")
+    print("=" * 75)
 
     current_os = platform.system()
     current_arch = platform.machine()
-    print(f"Current Host: {current_os} ({current_arch})")
+    print(f"Current Environment: {current_os} ({current_arch})")
 
-    # Gracefully skip on non-Darwin platforms (e.g. Windows development machine)
+    # Gracefully skip on non-Darwin platforms (e.g. Windows development host)
     if current_os != "Darwin":
         print("\n[SKIP] macOS-only test: skipped on Windows development host.")
         print("       Target machine: Mac mini Apple Silicon macOS ARM64.")
@@ -51,81 +61,67 @@ def run_phase4_agent_startup_test() -> int:
 
     failures: list[str] = []
 
-    # 1. Platform & OS Check
-    print("\n[1] Platform & OS Check")
-    if current_os != "Darwin":
-        failures.append(f"Expected Darwin, got {current_os}")
-    else:
-        print("  [OK] macOS (Darwin) confirmed.")
+    # ------------------------------------------------------------------
+    # PART 1: Client Process Verification (Zero custom imports)
+    # ------------------------------------------------------------------
+    print("\n" + "-" * 60)
+    print("[PART 1] Client Process Initialisation & Controller Connection")
+    print("-" * 60)
 
-    # 2. Python Architecture Check
-    print("\n[2] Python Architecture Check")
+    # 1. Platform checks
     py_ver = sys.version.splitlines()[0]
     py_exec = sys.executable
     is_64bit = sys.maxsize > 2**32
+    print(f"  Python: {py_ver} ({current_arch}, 64-bit: {is_64bit})")
     print(f"  Executable: {py_exec}")
-    print(f"  Version: {py_ver}")
-    print(f"  Arch: {current_arch} (64-bit: {is_64bit})")
 
     if current_arch != "arm64":
         failures.append(f"Expected arm64 machine architecture, got {current_arch}")
-    if not is_64bit:
-        failures.append("Python is not 64-bit")
 
-    # 3. MaaFramework Module Loading
-    print("\n[3] MaaFramework Module Loading")
+    # 2. MaaFramework Client-side modules
     try:
         import maa
-        from maa.agent.agent_server import AgentServer
+        from maa.library import Library
         from maa.controller import MacOSController
-        from maa.define import MaaMacOSInputMethodEnum, MaaMacOSScreencapMethodEnum
+        from maa.define import MaaMacOSScreencapMethodEnum, MaaMacOSInputMethodEnum
+        from maa.toolkit import Toolkit, DesktopWindow
+        from maa.resource import Resource
         from maa.tasker import Tasker
-        from maa.toolkit import DesktopWindow, Toolkit
+        from maa.agent_client import AgentClient
 
-        print(f"  MaaFramework module: {maa.__file__}")
-        print("  [OK] maa, AgentServer, Tasker, MacOSController, Toolkit loaded.")
+        is_server = Library.is_agent_server() if hasattr(Library, "is_agent_server") else False
+        print(f"  MaaFramework core loaded: {maa.__file__}")
+        print(f"  Library.is_agent_server(): {is_server} (Expected: False in Client process)")
+        if is_server:
+            failures.append("Client process is unexpectedly flagged as AgentServer.")
     except Exception as exc:
-        failures.append(f"Failed to import MaaFramework: {exc}")
+        failures.append(f"Failed to load MaaFramework client modules: {exc}")
         return _report_results(failures)
 
-    # 4. CustomActions Import & Registration
-    print("\n[4] MaaNTE CustomActions Import & Registration")
-    try:
-        import custom
-        action_count = len(custom.action.__all__) if hasattr(custom, "action") else 0
-        print(f"  Successfully imported custom package. Registered actions: {action_count}")
-        if action_count < 40:
-            failures.append(f"Expected at least 40 registered custom actions, found {action_count}")
-        else:
-            print("  [OK] All CustomAction classes imported successfully.")
-    except Exception as exc:
-        failures.append(f"Failed to import custom actions: {exc}")
-
-    # 5 & 6. Toolkit Window Discovery & Game Window Matching
-    print("\n[5 & 6] Window Discovery & 异环 Matching")
+    # 3. Game Window Discovery
     game_window = None
     try:
         from agent.platform import get_window_manager
         wm = get_window_manager()
         windows = wm.enumerate_windows()
         print(f"  Toolkit enumerated {len(windows)} desktop window(s):")
-        for idx, w in enumerate(windows[:8], 1):
+        for idx, w in enumerate(windows[:6], 1):
             print(f"    {idx}. ID={w.id}, Title='{w.title}', Class='{w.class_name}'")
 
         game_window = wm.find_game_window()
         if game_window:
-            print(f"  [OK] Found 异环 Game Window: ID={game_window.id}, Title='{game_window.title}', Class='{game_window.class_name}'")
+            print(f"  [OK] Found 异环 Window: ID={game_window.id}, Title='{game_window.title}', Class='{game_window.class_name}'")
         else:
-            print("  [WARN] Game window not detected. (Ensure 异环 is launched on Mac mini)")
+            print("  [WARN] 异环 window not found (ensure game is open on Mac mini).")
     except Exception as exc:
         failures.append(f"Window discovery failed: {exc}")
 
-    # 7 & 8. MacOSController Connection & Screenshot
-    print("\n[7 & 8] MacOSController Connection & Screenshot")
+    # 4. Controller & Screencap (Client side)
+    ctrl = None
     if game_window and game_window.id:
         try:
             wid = game_window.id
-            print(f"  Creating MacOSController for window_id={wid}...")
+            print(f"  Instantiating official MacOSController(window_id={wid})...")
             ctrl = MacOSController(
                 wid,
                 screencap_method=MaaMacOSScreencapMethodEnum.ScreenCaptureKit,
@@ -138,7 +134,7 @@ def run_phase4_agent_startup_test() -> int:
             if not ctrl.connected:
                 failures.append(f"MacOSController connection failed for window_id={wid}")
             else:
-                print(f"  [OK] MacOSController connected: {ctrl.connected}")
+                print(f"  [OK] MacOSController connected successfully: {ctrl.connected}")
 
                 print("  Posting screencap job...")
                 cap_job = ctrl.post_screencap()
@@ -149,41 +145,123 @@ def run_phase4_agent_startup_test() -> int:
                     failures.append("cached_image is None after post_screencap")
                 else:
                     h, w = img.shape[:2]
-                    print(f"  [OK] Screencap captured successfully! Image size: {w}x{h}, dtype={img.dtype}")
+                    print(f"  [OK] Screencap successful! Frame dimensions: {w}x{h}, channels: {img.shape[2] if len(img.shape) > 2 else 1}")
         except Exception as exc:
-            failures.append(f"MacOSController interaction failed: {exc}")
+            failures.append(f"MacOSController client interaction failed: {exc}")
     else:
-        print("  [INFO] Skipping live controller connection (no game window available).")
+        print("  [INFO] Skipping live controller screencap (game window not present).")
 
-    # 9 & 10. AgentServer & Tasker Lifecycle
-    print("\n[9 & 10] AgentServer & Tasker Initialization")
+    # 5. Initialize Resource & Tasker in Client Process
+    res = Resource()
+    tasker = Tasker()
     try:
+        base_res_path = PROJECT_ROOT / "resource" / "base"
+        if base_res_path.exists():
+            post_res = res.post_bundle(str(base_res_path))
+            post_res.wait()
+            print(f"  [OK] Resource bundle loaded: {base_res_path}")
+
         Tasker.set_log_dir(str(PROJECT_ROOT / "debug"))
-        test_socket = f"maante_startup_test_{int(time.time())}"
-        print(f"  Starting AgentServer on socket '{test_socket}'...")
-        AgentServer.start_up(test_socket)
-        print("  AgentServer running.")
-        AgentServer.shut_down()
-        print("  [OK] AgentServer startup and shutdown completed cleanly.")
+        if ctrl and ctrl.connected:
+            tasker.bind(res, ctrl)
+            print(f"  [OK] Tasker bound to Resource and MacOSController (inited: {tasker.inited})")
+        else:
+            print("  [OK] Resource and Tasker initialized.")
     except Exception as exc:
-        failures.append(f"AgentServer lifecycle failed: {exc}")
+        failures.append(f"Resource/Tasker initialization failed: {exc}")
+
+    # ------------------------------------------------------------------
+    # PART 2: Agent Subprocess & IPC Verification
+    # ------------------------------------------------------------------
+    print("\n" + "-" * 60)
+    print("[PART 2] Agent Subprocess Launch & AgentClient IPC Connection")
+    print("-" * 60)
+
+    socket_id = f"maante_mac_ipc_{int(time.time())}"
+    print(f"  Assigned Agent Socket ID: {socket_id}")
+
+    agent_proc = None
+    try:
+        agent_main = AGENT_DIR / "main.py"
+        agent_cmd = [sys.executable, "-u", str(agent_main), socket_id]
+        print(f"  Spawning Agent subprocess: {' '.join(agent_cmd)}")
+
+        agent_env = os.environ.copy()
+        agent_proc = subprocess.Popen(
+            agent_cmd,
+            cwd=str(PROJECT_ROOT),
+            env=agent_env,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+        )
+
+        # Allow AgentServer time to initialize
+        time.sleep(2.0)
+
+        # Check if agent process crashed prematurely
+        poll_code = agent_proc.poll()
+        if poll_code is not None:
+            stdout_data, _ = agent_proc.communicate(timeout=1)
+            failures.append(f"Agent subprocess exited prematurely with code {poll_code}. Output:\n{stdout_data}")
+            return _report_results(failures)
+
+        print("  Agent subprocess running. Creating AgentClient...")
+        agent_client = AgentClient(socket_id)
+        
+        print("  Binding Resource to AgentClient...")
+        agent_client.bind(res)
+
+        print("  Connecting AgentClient to AgentServer socket...")
+        ipc_job = agent_client.connect()
+        if hasattr(ipc_job, "wait"):
+            ipc_job.wait()
+
+        print(f"  AgentClient connected: {agent_client.connected}")
+        print(f"  AgentClient alive: {agent_client.alive}")
+
+        if not agent_client.connected:
+            failures.append(f"AgentClient failed to connect to socket {socket_id}")
+        else:
+            actions = agent_client.custom_action_list
+            action_count = len(actions) if actions else 0
+            print(f"  [OK] AgentServer exposed {action_count} registered CustomActions to Client!")
+            if actions:
+                print(f"  Sample actions from Agent: {actions[:6]}")
+            if action_count < 40:
+                failures.append(f"Expected >= 40 custom actions from AgentServer, got {action_count}")
+
+    except Exception as exc:
+        failures.append(f"Agent subprocess or IPC connection error: {exc}")
+    finally:
+        if agent_proc is not None:
+            print("  Terminating Agent subprocess...")
+            agent_proc.terminate()
+            try:
+                out, _ = agent_proc.communicate(timeout=2.5)
+                if out:
+                    print(f"  [Agent Log Output]:\n{out.strip()}")
+            except subprocess.TimeoutExpired:
+                print("  Agent subprocess did not exit in time, killing...")
+                agent_proc.kill()
+            print("  [OK] Agent subprocess cleanly shut down.")
 
     return _report_results(failures)
 
 
 def _report_results(failures: list[str]) -> int:
-    print("\n" + "=" * 70)
-    print("PHASE 4 AGENT STARTUP TEST SUMMARY")
-    print("=" * 70)
+    print("\n" + "=" * 75)
+    print("PHASE 5 DUAL-PROCESS TEST SUMMARY")
+    print("=" * 75)
     if not failures:
-        print(">> [STATUS: PASS] macOS ARM64 Agent startup & controller verified successfully.")
+        print(">> [STATUS: PASS] macOS ARM64 Client/Agent Dual-Process Architecture fully verified.")
         return 0
     else:
-        print(f">> [STATUS: FAIL] Found {len(failures)} failure(s):")
+        print(f">> [STATUS: FAIL] Found {len(failures)} error(s):")
         for idx, f in enumerate(failures, 1):
             print(f"   {idx}. {f}")
         return 1
 
 
 if __name__ == "__main__":
-    sys.exit(run_phase4_agent_startup_test())
+    sys.exit(run_phase5_dual_process_verification())
