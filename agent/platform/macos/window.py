@@ -64,15 +64,15 @@ class MacOSWindowManager(BaseWindowManager):
 
     def find_game_window(
         self,
-        pattern: str = r"^\s*(异环|NTE).*$",
+        pattern: str = r"^\s*(異環|异环|NTE).*$",
         **kwargs: Any,
     ) -> Optional[WindowInfo]:
         """
         Find game window across Toolkit desktop windows by bundle/class or title.
         Matches:
         1. Exact/prefix bundle class_name: 'com.pwrd.yh.ios', 'com.pwrd.yh'
-        2. Window title regex: '异环', 'NTE'
-        3. Window title substring: '异环', 'NTE'
+        2. Window title regex: '異環', '异环', 'NTE'
+        3. Window title substring: '異環', '异环', 'NTE'
         """
         windows = self.enumerate_windows()
         regex = re.compile(pattern, re.IGNORECASE)
@@ -89,7 +89,8 @@ class MacOSWindowManager(BaseWindowManager):
 
         # 3. Title substring fallback
         for w in windows:
-            if "异环" in w.title or "NTE" in w.title:
+            t = w.title or ""
+            if "異環" in t or "异环" in t or "NTE" in t or "yh" in t.lower():
                 return w
 
         return None
@@ -104,9 +105,10 @@ class MacOSWindowManager(BaseWindowManager):
 
     def get_window_size(self, window_id: Any) -> Optional[Tuple[int, int]]:
         """
-        On macOS, client resolution is managed by MacOSController or system display.
+        On macOS, MacOSAdaptedController dynamically crops and normalizes frames
+        to the standard 1280x720 pipeline baseline.
         """
-        return None
+        return (1280, 720)
 
     def ensure_window_resolution(
         self,
