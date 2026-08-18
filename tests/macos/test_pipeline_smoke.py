@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
 """
-PHASE 6A: macOS ARM64 Pure Read-Only Recognition Smoke Test Suite (Hardened).
+PHASE 6B: macOS ARM64 Pure Read-Only Recognition Smoke Test Suite.
 
-Safety Boundaries:
-- ZERO mouse / keyboard inputs.
-- ZERO game state modifications.
-- Non-blocking polling with timeout (never hangs indefinitely on task_job.wait()).
-- Instant teardown on Ctrl+C (SIGINT) or timeout.
-- Agent subprocess guaranteed termination in finally block.
+Features:
+- Uses MacOSAdaptedController (intercepting ScreenCaptureKit to strip title bar and normalize to 1280x720).
+- Pure Read-Only execution: ZERO mouse/keyboard inputs, ZERO state mutations.
+- Non-blocking timeout polling with signal handling (Ctrl+C).
+- Guaranteed Agent subprocess cleanup in finally block.
 """
 
 from __future__ import annotations
@@ -82,14 +81,14 @@ def safe_wait_task_job(task_job, timeout_sec: float = 6.0) -> bool:
     return True
 
 
-def run_phase6a_smoke_test() -> int:
+def run_phase6b_smoke_test() -> int:
     global _GLOBAL_AGENT_PROC
 
     signal.signal(signal.SIGINT, _sigint_handler)
     signal.signal(signal.SIGTERM, _sigint_handler)
 
     print("=" * 78)
-    print("MaaNTE PHASE 6A: macOS ARM64 Pure Read-Only Recognition Smoke Test")
+    print("MaaNTE PHASE 6B: macOS 16:9 Frame Adapter & Recognition Smoke Test")
     print("=" * 78)
 
     current_os = platform.system()
@@ -117,12 +116,11 @@ def run_phase6a_smoke_test() -> int:
         print("\n[2] MaaFramework Client Initialization")
         import maa
         from maa.library import Library
-        from maa.controller import MacOSController
-        from maa.define import MaaMacOSScreencapMethodEnum, MaaMacOSInputMethodEnum
         from maa.resource import Resource
         from maa.tasker import Tasker
         from maa.agent_client import AgentClient
         from agent.platform import get_window_manager
+        from agent.platform.macos.controller import MacOSAdaptedController
 
         is_server = Library.is_agent_server() if hasattr(Library, "is_agent_server") else False
         print(f"  MaaFramework core loaded: {maa.__file__}")
@@ -140,29 +138,24 @@ def run_phase6a_smoke_test() -> int:
 
         print(f"  [OK] Found 异环 Window: ID={game_window.id}, Title='{game_window.title}', Class='{game_window.class_name}'")
 
-        # 4. Controller Setup
-        print("\n[4] MacOSController Connection & Live Frame Verification")
-        ctrl = MacOSController(
-            game_window.id,
-            screencap_method=MaaMacOSScreencapMethodEnum.ScreenCaptureKit,
-            input_method=MaaMacOSInputMethodEnum.GlobalEvent,
-        )
-        ctrl.post_connection().wait()
+        # 4. Controller Setup (MacOSAdaptedController)
+        print("\n[4] MacOSAdaptedController Connection & Live Frame Verification")
+        ctrl = MacOSAdaptedController(game_window.id)
+        connected = ctrl.connect()
 
-        if not ctrl.connected:
-            failures.append(f"MacOSController connection failed for window_id={game_window.id}")
+        if not connected:
+            failures.append(f"MacOSAdaptedController connection failed for window_id={game_window.id}")
             return _report_results(failures)
 
-        ctrl.post_screencap().wait()
-        img = ctrl.cached_image
-        if img is None:
-            failures.append("cached_image is None after initial post_screencap")
+        # Trigger first screencap through adapter
+        norm_img = ctrl.screencap()
+        if norm_img is None:
+            failures.append("Adapted screencap returned None.")
             return _report_results(failures)
 
-        h, w = img.shape[:2]
-        ch = img.shape[2] if len(img.shape) > 2 else 1
-        print(f"  [OK] MacOSController connected. Raw image dimensions: {w}x{h} (channels: {ch})")
-        print(f"  [OK] Window Logical Resolution: {ctrl.resolution}")
+        nh, nw = norm_img.shape[:2]
+        print(f"  [OK] MacOSAdaptedController connected: {connected}")
+        print(f"  [OK] Adapted Frame Delivered to Tasker: {nw} x {nh} (Exact 1280x720: {nw == 1280 and nh == 720})")
 
         # 5. Resource Bundle & Tasker
         print("\n[5] Resource Bundle Loading & Tasker Binding")
@@ -174,7 +167,7 @@ def run_phase6a_smoke_test() -> int:
 
         Tasker.set_log_dir(str(PROJECT_ROOT / "debug"))
         tasker.bind(res, ctrl)
-        print(f"  [OK] Tasker bound (inited: {tasker.inited})")
+        print(f"  [OK] Tasker bound to Adapted Controller (inited: {tasker.inited})")
 
         # 6. Agent Subprocess Setup (Architecture Verification)
         print("\n[6] Agent Subprocess Lifecycle Initialization")
@@ -202,7 +195,7 @@ def run_phase6a_smoke_test() -> int:
 
         # 7. Execute Pure Read-Only Recognition Smoke Tests
         print("\n" + "=" * 78)
-        print("[7] Executing Pure Read-Only Recognition Smoke Tests (Zero Inputs, Safe Timeout)")
+        print("[7] Executing Pure Read-Only Recognition Smoke Tests (1280x720 Normalized Canvas)")
         print("=" * 78)
 
         test_nodes = [
@@ -295,7 +288,7 @@ def run_phase6a_smoke_test() -> int:
 
         # 8. Summary Report
         print("\n" + "=" * 78)
-        print("PHASE 6A RECOGNITION SMOKE TEST SUMMARY")
+        print("PHASE 6B RECOGNITION SMOKE TEST SUMMARY")
         print("=" * 78)
         print(f"{'Node Name':<22} | {'Job Status':<12} | {'Game Match':<10} | {'Algorithm':<15} | {'Latency':<10}")
         print("-" * 78)
@@ -315,7 +308,7 @@ def run_phase6a_smoke_test() -> int:
 def _report_results(failures: List[str]) -> int:
     print("\n" + "=" * 78)
     if not failures:
-        print(">> [STATUS: PHASE 6A PASS] All Read-Only Recognition Pipelines Executed with Zero Side-Effects.")
+        print(">> [STATUS: PHASE 6B PASS] 1280x720 Frame Adapter & Recognition Pipelines Executed Successfully.")
         return 0
     else:
         print(f">> [STATUS: FAIL] Found {len(failures)} error(s):")
@@ -325,4 +318,4 @@ def _report_results(failures: List[str]) -> int:
 
 
 if __name__ == "__main__":
-    sys.exit(run_phase6a_smoke_test())
+    sys.exit(run_phase6b_smoke_test())
