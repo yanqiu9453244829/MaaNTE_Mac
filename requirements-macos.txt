@@ -1,0 +1,14 @@
+﻿maafw==v5.10.4
+loguru
+pillow
+pytz
+requests
+opencv-python
+onnxruntime
+librosa
+numpy
+scipy
+scikit-learn
+soundcard
+mido
+websockets>=14.0,<17.0

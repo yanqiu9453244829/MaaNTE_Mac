@@ -1,0 +1,22 @@
+{
+  "version": "1.0",
+  "instances": [
+    {
+      "id": "macos-default",
+      "name": "macOS 實例",
+      "controllerName": "MacOS",
+      "resourceName": "官服",
+      "tasks": []
+    }
+  ],
+  "settings": {
+    "theme": "light",
+    "language": "zh-TW",
+    "autoRunOnLaunch": false,
+    "hotkeys": {
+      "startTasks": "F10",
+      "stopTasks": "F11"
+    }
+  },
+  "_note": "macOS config — controllerName must stay MacOS"
+}

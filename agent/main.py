@@ -434,7 +434,10 @@ def check_and_install_dependencies():
 
 
 def _check_admin_privilege():
-    """检查是否以管理员权限运行，若否则输出警告"""
+    """检查是否以管理员权限运行，若否则输出警告（仅 Windows）"""
+    if not sys.platform.startswith("win"):
+        return
+
     import ctypes
 
     if ctypes.windll.shell32.IsUserAnAdmin():
@@ -443,6 +446,7 @@ def _check_admin_privilege():
     logger.warning(
         "未以管理员权限运行，部分输入功能可能无法正常使用。"
         "请右键 MaaNTE.exe → 以管理员身份运行。"
+
     )
 
 
