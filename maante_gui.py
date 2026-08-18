@@ -392,8 +392,14 @@ class TaskRunner:
                     agent_proc.wait(timeout=5)
                 except subprocess.TimeoutExpired:
                     _quiet(lambda: agent_proc.kill())
-            _quiet(lambda: agent_client.__del__() if agent_client else None)
-            del tasker, resource, controller, agent_client
+            # CRITICAL: never call __del__ explicitly on maafw objects.
+            # MaaAgentClientDestroy (and other native destructors) must only run
+            # once — via Python GC when the reference count drops to zero.
+            # Calling __del__ explicitly AND then del = double-free = SIGSEGV.
+            tasker       = None
+            resource     = None
+            controller   = None
+            agent_client = None
             self._log("[INFO] 清理完成")
             self._set_status(STATUS_IDLE)
 
