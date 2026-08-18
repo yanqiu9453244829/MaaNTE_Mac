@@ -228,28 +228,45 @@ class TaskRunner:
             self._status_cb(s)
 
     def _run(self, window_id: int, task_names: list) -> None:
-        controller = None
-        tasker     = None
-        resource   = None
-        agent_proc = None
-        socket_id  = str(uuid.uuid4())
+        controller   = None
+        tasker       = None
+        resource     = None
+        agent_client = None
+        agent_proc   = None
 
         try:
             self._set_status(STATUS_RUNNING)
 
-            # Step 1: Import maafw
+            # Step 1: Import maafw (validate environment)
             self._log("[INFO] 載入 MaaFramework 模組...")
             try:
                 from maa.resource import Resource
                 from maa.tasker import Tasker
-                import maa.agent.agent_client  # noqa: F401
+                from maa.agent_client import AgentClient  # maa/agent_client.py (top-level)
             except ImportError as e:
                 self._log(f"[ERROR] 無法導入 maafw: {e}")
                 self._log("[ERROR] 請執行: pip install -r requirements-macos.txt")
                 self._set_status(STATUS_ERROR)
                 return
 
-            # Step 2: Controller
+            # Step 2: AgentClient — create FIRST to get the identifier (socket_id)
+            # The identifier is then passed to the agent subprocess so it knows where to connect.
+            self._log("[INFO] 建立 AgentClient (取得 socket identifier)...")
+            try:
+                agent_client = AgentClient()
+                socket_id = agent_client.identifier
+                if not socket_id:
+                    self._log("[ERROR] AgentClient 無法取得 identifier")
+                    self._set_status(STATUS_ERROR)
+                    return
+                self._log(f"[INFO] AgentClient identifier: {socket_id[:16]}... ✓")
+            except Exception as e:
+                self._log(f"[ERROR] AgentClient 建立失敗: {e}")
+                self._log(traceback.format_exc())
+                self._set_status(STATUS_ERROR)
+                return
+
+            # Step 3: Controller
             self._log(f"[INFO] 連接遊戲窗口 id={window_id}...")
             try:
                 from platform.macos.controller import MacOSAdaptedController
@@ -265,7 +282,7 @@ class TaskRunner:
                 self._set_status(STATUS_ERROR)
                 return
 
-            # Step 3: Resource
+            # Step 4: Resource
             self._log("[INFO] 載入 resource/base...")
             try:
                 from maa.resource import Resource
@@ -282,7 +299,18 @@ class TaskRunner:
                 self._set_status(STATUS_ERROR)
                 return
 
-            # Step 4: Tasker
+            # Step 5: AgentClient.bind(resource) — links custom actions to this resource
+            self._log("[INFO] 綁定 AgentClient 到 Resource...")
+            try:
+                ok = agent_client.bind(resource)
+                if not ok:
+                    self._log("[WARN] AgentClient.bind() 返回 False，Custom Action 可能不可用")
+                else:
+                    self._log("[INFO] AgentClient.bind() 成功 ✓")
+            except Exception as e:
+                self._log(f"[WARN] AgentClient.bind() 失敗 (非致命): {e}")
+
+            # Step 6: Tasker
             self._log("[INFO] 初始化 Tasker...")
             try:
                 from maa.tasker import Tasker
@@ -301,7 +329,7 @@ class TaskRunner:
                 self._set_status(STATUS_ERROR)
                 return
 
-            # Step 5: Agent subprocess
+            # Step 7: Agent subprocess — pass the identifier so AgentServer knows where to connect
             self._log("[INFO] 啟動 Agent 子進程...")
             try:
                 venv_py = PROJECT_ROOT / ".venv" / "bin" / "python3"
@@ -328,20 +356,7 @@ class TaskRunner:
                 self._set_status(STATUS_ERROR)
                 return
 
-            # Step 6: AgentClient
-            self._log("[INFO] 連接 AgentClient...")
-            try:
-                from maa.agent.agent_client import AgentClient
-                AgentClient.start_up(socket_id)
-                time.sleep(0.5)
-                self._log("[INFO] AgentClient 連接成功 ✓")
-            except Exception as e:
-                self._log(f"[ERROR] AgentClient 失敗: {e}")
-                self._log(traceback.format_exc())
-                self._set_status(STATUS_ERROR)
-                return
-
-            # Step 7: Execute tasks
+            # Step 8: Execute tasks
             for task_name in task_names:
                 if self._stop_evt.is_set():
                     self._log("[INFO] 任務已被使用者停止")
@@ -366,22 +381,23 @@ class TaskRunner:
             self._set_status(STATUS_ERROR)
 
         finally:
+            # Teardown in safe order: stop tasker -> terminate agent proc -> release client
             self._log("[INFO] 正在清理資源...")
             self._tasker_ref = None
             _quiet(lambda: tasker.post_stop() if tasker else None)
             time.sleep(0.2)
-            _quiet(lambda: __import__("maa.agent.agent_client",
-                                      fromlist=["AgentClient"]).AgentClient.shut_down())
             if agent_proc and agent_proc.poll() is None:
                 _quiet(lambda: agent_proc.terminate())
                 try:
                     agent_proc.wait(timeout=5)
                 except subprocess.TimeoutExpired:
                     _quiet(lambda: agent_proc.kill())
-            # GC in correct order
-            del tasker, resource, controller
+            _quiet(lambda: agent_client.__del__() if agent_client else None)
+            del tasker, resource, controller, agent_client
             self._log("[INFO] 清理完成")
             self._set_status(STATUS_IDLE)
+
+
 
     def _fwd_output(self, proc: subprocess.Popen) -> None:
         try:
